@@ -25,12 +25,12 @@ void catalogue_read() {
       atexit(&catalogue_close);
       while ((i<cat_size) && (!feof(catalogue_handle))) {
         struct star * a = cat_stars+i;
-	int longmin;
-	int latmin;
-        fscanf(catalogue_handle, "%d %s %d %d %d %d %d %f %d", &a->num, a->cons, &a->numinc, &longmin, &a->longsec, &latmin, &a->latsec, &a->mag, &a->bscn);
-	a->longsec += longmin * 60;
-	a->latsec += latmin * 60;
-	dlprintf("%d %s %d %d %d %f %d\n", a->num, a->cons, a->numinc, a->longsec, a->latsec, a->mag, a->bscn);
+	int longdeg;
+	int latdeg;
+        fscanf(catalogue_handle, "%d %s %d %d %d %d %d %f %d", &a->num, a->cons, &a->numinc, &longdeg, &a->longmin, &latdeg, &a->latmin, &a->mag, &a->bscn);
+	a->longmin += longdeg * 60;
+	a->latmin += latdeg * 60;
+	dlprintf("%d %s %d %d %d %f %d\n", a->num, a->cons, a->numinc, a->longmin, a->latmin, a->mag, a->bscn);
 	i++;
       }
       fclose(catalogue_handle);

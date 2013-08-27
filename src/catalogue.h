@@ -5,8 +5,8 @@ struct star {
   int num;
   char cons[4];
   int numinc;
-  int longsec;
-  int latsec;
+  int longmin;
+  int latmin;
   float mag;
   int bscn;
 };
