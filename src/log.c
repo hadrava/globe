@@ -10,13 +10,13 @@ FILE * log_handle = NULL;
 
 
 void log_init() {
-  if (par_logfile) {
-    log_handle = fopen(par_logfile, "a");
+  if (par_log_file) {
+    log_handle = fopen(par_log_file, "a");
     if (log_handle) {
       time_t time_now = time(NULL);
       struct tm * now = localtime(&time_now);
       log_oppened = 1;
-      lprintf("Opening logfile \"%s\" on %s", par_logfile, asctime(now));
+      lprintf("Opening logfile \"%s\" on %s", par_log_file, asctime(now));
       atexit(&log_close);
     }
   }
@@ -26,9 +26,24 @@ void log_close() {
   if (log_oppened && log_handle) {
     time_t time_now = time(NULL);
     struct tm * now = localtime(&time_now);
-    lprintf("Closing logfile \"%s\" on %s", par_logfile, asctime(now));
+    lprintf("Closing logfile \"%s\" on %s", par_log_file, asctime(now));
     log_oppened = 0;
     fclose(log_handle);
+  }
+}
+
+void dlprintf(const char *format, ...) {
+  if (par_verbose >= 2) {
+    va_list args;
+    if (log_oppened) {
+      va_start(args, format);
+      vfprintf(log_handle, format, args);
+      va_end(args);
+    }
+
+    va_start(args, format);
+    vfprintf(stdout, format, args);
+    va_end(args);
   }
 }
 

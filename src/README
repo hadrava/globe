@@ -1,0 +1,2 @@
+draw catalogue
+./globe --verbose=2 --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=4320 --spherical-height=2160 --catalogue=../katalogy/almagest_clean.dat

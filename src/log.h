@@ -4,6 +4,7 @@
 void log_init();
 void log_close();
 
+void dlprintf(const char *format, ...);
 void vlprintf(const char *format, ...);
 void lprintf(const char *format, ...);
 void wlprintf(const char *format, ...);
