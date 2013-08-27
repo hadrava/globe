@@ -31,6 +31,10 @@ void render_init() {
 void render() {
   render_drawings();
   render_catalogue();
+  if (par_sph_win) {
+    cvShowImage("Spherical image", sph_image);
+    cvWaitKey(0);
+  }
 }
 
 void render_catalogue() {
