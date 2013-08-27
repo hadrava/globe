@@ -1,2 +1,6 @@
 draw catalogue
 ./globe --verbose=2 --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=4320 --spherical-height=2160 --catalogue=../katalogy/almagest_clean.dat --star-size=0.5
+
+draw drawings and catalogue
+./globe --verbose=1 --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=4320 --spherical-height=2160 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.5 --drawings-size=0.5
+
