@@ -30,8 +30,8 @@ void render_init() {
 void render() {
    for (int i = 0; i < cat_size; i++) {
      CvPoint spherical = sph_to_sph_image(cvPoint2D64f(cat_stars[i].longmin, cat_stars[i].latmin));
-     cvCircle(sph_image, spherical, 8-cat_stars[i].mag, CV_RGB(255,0,0), 3, CV_AA, 0);
-     dlprintf("draw star: x=%d y=%d radius=%d\n", spherical.x, spherical.y, 8-cat_stars[i].mag);
+     cvCircle(sph_image, spherical, par_star_size*(8-cat_stars[i].mag), CV_RGB(255,0,0), 3, CV_AA, 0);
+     dlprintf("draw star: x=%d y=%d radius=%d\n", spherical.x, spherical.y, par_star_size*(8-cat_stars[i].mag));
 
   }
 }

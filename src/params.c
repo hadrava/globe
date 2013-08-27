@@ -9,6 +9,7 @@
 
 #define DEF_PAR_SPH_WIDTH 21600
 #define DEF_PAR_SPH_HEIGHT 10800
+#define DEF_PAR_STAR_SIZE 1.0
 
 int par_verbose = 0;
 int par_help = 0;
@@ -18,6 +19,7 @@ int par_sph_width = DEF_PAR_SPH_WIDTH;
 int par_sph_height = DEF_PAR_SPH_HEIGHT;
 char * par_sph_file = NULL;
 int par_sph_win = 0;
+float par_star_size = DEF_PAR_STAR_SIZE;
 
 void parse_params(int argc, char *argv[]) {
   for(int i=1; i<argc; i++) {
@@ -30,6 +32,7 @@ void parse_params(int argc, char *argv[]) {
       PARSE_PAR("--spherical-width", "%d", par_sph_width);
       PARSE_PAR("--spherical-height", "%d", par_sph_height);
       PARSE_STRING_PAR("--spherical-file", par_sph_file);
+      PARSE_PAR("--star-size", "%f", par_star_size);
     }
     else {
       DETECT_OPT("--verbose", par_verbose++);
@@ -49,6 +52,7 @@ void print_params() {
   lprintf("--spherical-height=%d\n", par_sph_height);
   lprintf("--spherical-file=%s\n", par_sph_file);
   lprintf("--spherical-window=%d\n", par_sph_win);
+  lprintf("--star-size=%f\n", par_star_size);
 }
 
 void print_available_params(){
@@ -62,5 +66,6 @@ void print_available_params(){
   lprintf("    --spherical-height=PIX  set height of spherical image (default: %d)\n", DEF_PAR_SPH_HEIGHT);
   lprintf("    --spherical-file=FILE   save spherical image to file\n");
   lprintf("    --spherical-window      show sperical image in window\n");
+  lprintf("    --star-size=COEFF       set star size (default: %f)\n", DEF_PAR_STAR_SIZE);
 }
 
