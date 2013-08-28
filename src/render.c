@@ -44,13 +44,19 @@ void render() {
 }
 
 void render_catalogue() {
+  int cons_center_x, cons_center_y, cons_stars;
   for (int i = 0; i < cat_size; i++) {
     CvPoint image_pt = sph_to_sph_image(cvPoint2D64f(cat_stars[i].longmin, cat_stars[i].latmin));
     cvCircle(sph_image, image_pt, par_star_size*(8-cat_stars[i].mag), CV_RGB(255,0,0), 3, CV_AA, 0);
     dlprintf("draw star: x=%d y=%d radius=%d\n", image_pt.x, image_pt.y, par_star_size*(8-cat_stars[i].mag));
-    if (cat_stars[i].numinc == 1) {
-      cvPutText(sph_image, cat_stars[i].cons, image_pt, &bg_font, CV_RGB(0, 0, 0));
-      cvPutText(sph_image, cat_stars[i].cons, image_pt, &fg_font, CV_RGB(255,255,0));
+    if (cat_stars[i].numinc == 1)
+      cons_center_x = cons_center_y = cons_stars = 0;
+    cons_center_x += image_pt.x;
+    cons_center_y += image_pt.y;
+    cons_stars++;
+    if ((i == cat_size-1) || (cat_stars[i+1].numinc == 1)) {
+      cvPutText(sph_image, cat_stars[i].cons, cvPoint(cons_center_x/cons_stars,cons_center_y/cons_stars), &bg_font, CV_RGB(0, 0, 0));
+      cvPutText(sph_image, cat_stars[i].cons, cvPoint(cons_center_x/cons_stars,cons_center_y/cons_stars), &fg_font, CV_RGB(255,255,0));
     }
   }
 }
