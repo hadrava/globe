@@ -9,6 +9,9 @@
 
 IplImage * sph_image;
 
+CvFont bg_font;
+CvFont fg_font;
+
 void render_close() {
   if (par_sph_file)
     cvSaveImage(par_sph_file, sph_image, 0);
@@ -20,6 +23,9 @@ void render_close() {
 void render_init() {
   sph_image = cvCreateImage(cvSize(par_sph_width, par_sph_height), 8, 3);
   cvZero(sph_image);
+
+  cvInitFont(&bg_font, CV_FONT_HERSHEY_SIMPLEX, 0.3, 0.4, 0.0, 3, 8);
+  cvInitFont(&fg_font, CV_FONT_HERSHEY_SIMPLEX, 0.3, 0.4, 0.0, 1, 8);
 
   if (par_sph_win) {
     cvNamedWindow("Spherical image", 1);
@@ -39,20 +45,24 @@ void render() {
 
 void render_catalogue() {
    for (int i = 0; i < cat_size; i++) {
-     CvPoint image = sph_to_sph_image(cvPoint2D64f(cat_stars[i].longmin, cat_stars[i].latmin));
-     cvCircle(sph_image, image, par_star_size*(8-cat_stars[i].mag), CV_RGB(255,0,0), 3, CV_AA, 0);
-     dlprintf("draw star: x=%d y=%d radius=%d\n", image.x, image.y, par_star_size*(8-cat_stars[i].mag));
+     CvPoint image_pt = sph_to_sph_image(cvPoint2D64f(cat_stars[i].longmin, cat_stars[i].latmin));
+     cvCircle(sph_image, image_pt, par_star_size*(8-cat_stars[i].mag), CV_RGB(255,0,0), 3, CV_AA, 0);
+     dlprintf("draw star: x=%d y=%d radius=%d\n", image_pt.x, image_pt.y, par_star_size*(8-cat_stars[i].mag));
+     if (cat_stars[i].numinc == 1) {
+       cvPutText(sph_image, cat_stars[i].cons, image_pt, &bg_font, CV_RGB(0, 0, 0));
+       cvPutText(sph_image, cat_stars[i].cons, image_pt, &fg_font, CV_RGB(255,255,0));
+     }
   }
 }
 
 void render_drawings() {
    for (int i = 0; i < draw_count_lines; i++) {
-     CvPoint image1 = sph_to_sph_image(draw_lines[i].points[0]);
+     CvPoint image_pt1 = sph_to_sph_image(draw_lines[i].points[0]);
      for (int j = 1; j < draw_lines[i].count_points; j++) {
-       CvPoint image2 = sph_to_sph_image(draw_lines[i].points[j]);
-       cvLine(sph_image, image1, image2, CV_RGB(0,0,255), par_drawings_size*2, CV_AA, 0);
-       dlprintf("draw line: x1=%d y1=%d x2=%d y2=%d\n", image1.x, image1.y, image2.x, image2.y);
-       image1 = image2;
+       CvPoint image_pt2 = sph_to_sph_image(draw_lines[i].points[j]);
+       cvLine(sph_image, image_pt1, image_pt2, CV_RGB(0,0,255), par_drawings_size*2, CV_AA, 0);
+       dlprintf("draw line: x1=%d y1=%d x2=%d y2=%d\n", image_pt1.x, image_pt1.y, image_pt2.x, image_pt2.y);
+       image_pt1 = image_pt2;
      }
   }
 }
