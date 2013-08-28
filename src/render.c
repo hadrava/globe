@@ -44,25 +44,25 @@ void render() {
 }
 
 void render_catalogue() {
-   for (int i = 0; i < cat_size; i++) {
-     CvPoint image_pt = sph_to_sph_image(cvPoint2D64f(cat_stars[i].longmin, cat_stars[i].latmin));
-     cvCircle(sph_image, image_pt, par_star_size*(8-cat_stars[i].mag), CV_RGB(255,0,0), 3, CV_AA, 0);
-     dlprintf("draw star: x=%d y=%d radius=%d\n", image_pt.x, image_pt.y, par_star_size*(8-cat_stars[i].mag));
-     if (cat_stars[i].numinc == 1) {
-       cvPutText(sph_image, cat_stars[i].cons, image_pt, &bg_font, CV_RGB(0, 0, 0));
-       cvPutText(sph_image, cat_stars[i].cons, image_pt, &fg_font, CV_RGB(255,255,0));
-     }
+  for (int i = 0; i < cat_size; i++) {
+    CvPoint image_pt = sph_to_sph_image(cvPoint2D64f(cat_stars[i].longmin, cat_stars[i].latmin));
+    cvCircle(sph_image, image_pt, par_star_size*(8-cat_stars[i].mag), CV_RGB(255,0,0), 3, CV_AA, 0);
+    dlprintf("draw star: x=%d y=%d radius=%d\n", image_pt.x, image_pt.y, par_star_size*(8-cat_stars[i].mag));
+    if (cat_stars[i].numinc == 1) {
+      cvPutText(sph_image, cat_stars[i].cons, image_pt, &bg_font, CV_RGB(0, 0, 0));
+      cvPutText(sph_image, cat_stars[i].cons, image_pt, &fg_font, CV_RGB(255,255,0));
+    }
   }
 }
 
 void render_drawings() {
-   for (int i = 0; i < draw_count_lines; i++) {
-     CvPoint image_pt1 = sph_to_sph_image(draw_lines[i].points[0]);
-     for (int j = 1; j < draw_lines[i].count_points; j++) {
-       CvPoint image_pt2 = sph_to_sph_image(draw_lines[i].points[j]);
-       cvLine(sph_image, image_pt1, image_pt2, CV_RGB(0,0,255), par_drawings_size*2, CV_AA, 0);
-       dlprintf("draw line: x1=%d y1=%d x2=%d y2=%d\n", image_pt1.x, image_pt1.y, image_pt2.x, image_pt2.y);
-       image_pt1 = image_pt2;
-     }
+  for (int i = 0; i < draw_count_lines; i++) {
+    CvPoint image_pt1 = sph_to_sph_image(draw_lines[i].points[0]);
+    for (int j = 1; j < draw_lines[i].count_points; j++) {
+      CvPoint image_pt2 = sph_to_sph_image(draw_lines[i].points[j]);
+      cvLine(sph_image, image_pt1, image_pt2, CV_RGB(0,0,255), par_drawings_size*2, CV_AA, 0);
+      dlprintf("draw line: x1=%d y1=%d x2=%d y2=%d\n", image_pt1.x, image_pt1.y, image_pt2.x, image_pt2.y);
+      image_pt1 = image_pt2;
+    }
   }
 }
