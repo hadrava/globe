@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
 #include "catalogue.h"
@@ -35,6 +36,8 @@ void render_init() {
 }
 
 void render() {
+  if (par_coor_draw)
+    render_coordinates();
   render_drawings();
   render_catalogue();
   if (par_sph_win) {
@@ -70,5 +73,45 @@ void render_drawings() {
       dlprintf("draw line: x1=%d y1=%d x2=%d y2=%d\n", image_pt1.x, image_pt1.y, image_pt2.x, image_pt2.y);
       image_pt1 = image_pt2;
     }
+  }
+}
+
+void render_coordinates() {
+  int step = 60 * par_coor_step;
+  CvPoint image_pt1, image_pt2, text_pt;
+  char label[10];
+  for (int i = 0; i < 21600; i+=step) {
+    image_pt1 = sph_to_sph_image(cvPoint2D64f(i, -5400));
+    image_pt2 = sph_to_sph_image(cvPoint2D64f(i, +5400));
+    text_pt   = sph_to_sph_image(cvPoint2D64f(i + step/10, step/10));
+    sprintf(label, "%i", i/60);
+
+    cvLine(sph_image, image_pt1, image_pt2, CV_RGB(127,127,127), par_drawings_size*2, CV_AA, 0);
+    cvPutText(sph_image, label, text_pt, &bg_font, CV_RGB(0, 0, 0));
+    cvPutText(sph_image, label, text_pt, &fg_font, CV_RGB(127, 127, 127));
+  }
+  for (int i = 0; i < 5400; i+=step) {
+    image_pt1 = sph_to_sph_image(cvPoint2D64f(0, i));
+    image_pt2 = sph_to_sph_image(cvPoint2D64f(21600, i));
+    text_pt   = sph_to_sph_image(cvPoint2D64f(step/10, i + step/10));
+    sprintf(label, "+%i", i/60);
+    if (i == 0)
+      sprintf(label, "0");
+
+    cvLine(sph_image, image_pt1, image_pt2, CV_RGB(127,127,127), par_drawings_size*2, CV_AA, 0);
+    cvPutText(sph_image, label, text_pt, &bg_font, CV_RGB(0, 0, 0));
+    cvPutText(sph_image, label, text_pt, &fg_font, CV_RGB(127, 127, 127));
+
+
+    image_pt1 = sph_to_sph_image(cvPoint2D64f(0, -i));
+    image_pt2 = sph_to_sph_image(cvPoint2D64f(21600, -i));
+    text_pt   = sph_to_sph_image(cvPoint2D64f(step/10, -i + step/10));
+    sprintf(label, "-%i", i/60);
+    if (i == 0)
+      sprintf(label, "0");
+
+    cvLine(sph_image, image_pt1, image_pt2, CV_RGB(127,127,127), par_drawings_size*2, CV_AA, 0);
+    cvPutText(sph_image, label, text_pt, &bg_font, CV_RGB(0, 0, 0));
+    cvPutText(sph_image, label, text_pt, &fg_font, CV_RGB(127, 127, 127));
   }
 }

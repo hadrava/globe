@@ -6,3 +6,6 @@ draw drawings and catalogue
 
 window drawing:
 ./globe --verbose=1 --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=1600 --spherical-height=800 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.1 --drawings-size=0.5
+
+draw coordinates:
+./globe --verbose=1 --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=1600 --spherical-height=800 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.1 --drawings-size=0.5 --coordinates-draw --coordinates-step=20

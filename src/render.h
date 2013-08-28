@@ -6,5 +6,6 @@ void render_close();
 void render();
 void render_catalogue();
 void render_drawings();
+void render_coordinates();
 
 #endif

@@ -12,6 +12,8 @@ extern int par_sph_win;
 extern float par_star_size;
 extern char * par_drawings_file;
 extern float par_drawings_size;
+extern int par_coor_draw;
+extern int par_coor_step;
 
 void parse_params(int argc, char *argv[]);
 void print_params();
