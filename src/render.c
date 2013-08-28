@@ -28,7 +28,7 @@ void render_init() {
   cvInitFont(&fg_font, CV_FONT_HERSHEY_SIMPLEX, 0.3, 0.4, 0.0, 1, 8);
 
   if (par_sph_win) {
-    cvNamedWindow("Spherical image", 1);
+    cvNamedWindow("Spherical image", CV_WINDOW_AUTOSIZE | CV_WINDOW_KEEPRATIO | CV_GUI_EXPANDED);
   }
 
   atexit(&render_close);
