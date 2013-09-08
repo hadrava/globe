@@ -5,7 +5,7 @@
 
 struct drawing {
   int count_points;
-  CvPoint2D64f * points;
+  CvPoint2D64f * points; // in minutes
 };
 
 extern int draw_count_lines;

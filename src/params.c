@@ -2,6 +2,7 @@
 #include <string.h>
 #include "params.h"
 #include "log.h"
+#include "image.h"
 
 #define PARSE_PAR(PARNAME, PARTYPE, PARVARIABLE) if ((sizeof(PARNAME)==value-argv[i]) && (strncmp(argv[i],PARNAME,sizeof(PARNAME)-1) == 0)) { sscanf(value,PARTYPE,&PARVARIABLE); continue; }
 #define PARSE_STRING_PAR(PARNAME, PARVARIABLE) if ((sizeof(PARNAME)==value-argv[i]) && (strncmp(argv[i],PARNAME,sizeof(PARNAME)-1) == 0)) { PARVARIABLE=value; continue; }
@@ -44,6 +45,7 @@ void parse_params(int argc, char *argv[]) {
       PARSE_PAR("--drawings-size", "%f", par_drawings_size);
       PARSE_PAR("--coordinates-draw", "%d", par_coor_draw);
       PARSE_PAR("--coordinates-step", "%d", par_coor_step);
+      PARSE_STRING_PAR("--img", image_load(value); value);//WARN: macro hack
     }
     else {
       DETECT_OPT("--verbose", par_verbose++);
@@ -69,6 +71,7 @@ void print_params() {
   lprintf("--drawings-size=%f\n", par_drawings_size);
   lprintf("--coordinates-draw=%d\n", par_coor_draw);
   lprintf("--coordinates-step=%d\n", par_coor_step);
+  lprintf("--img=NOT_IMPLEMENTED\n");//TODO
 }
 
 void print_available_params(){
@@ -87,5 +90,6 @@ void print_available_params(){
   lprintf("    --drawings-size=COEFF     set drawings size (default: %f)\n", DEF_PAR_DRAWINGS_SIZE);
   lprintf("    --coordinates-draw[=1]    draw spherical coordinates\n");
   lprintf("    --coordinates-step=DEG    set coordinate spacing in degrees (default: %d)\n", DEF_PAR_COOR_STEP);
+  lprintf("    --img=FILE                load image of globe (can be used multiple times)\n");
 }
 

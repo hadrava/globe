@@ -5,8 +5,8 @@ CFLAGS=-c -Wall -std=c99 -ggdb
 
 all: globe
 
-globe: main.o params.o help.o log.o catalogue.o render.o transform.o drawings.o
-	$(CC) $(LDFLAGS) `pkg-config --libs opencv` main.o params.o help.o log.o catalogue.o render.o transform.o drawings.o -o globe
+globe: main.o params.o help.o log.o catalogue.o render.o transform.o drawings.o image.o
+	$(CC) $(LDFLAGS) `pkg-config --libs opencv` main.o params.o help.o log.o catalogue.o render.o transform.o drawings.o image.o -o globe
 
 main.o: main.c
 	$(CC) $(CFLAGS) main.c
@@ -31,6 +31,10 @@ transform.o: transform.c
 
 drawings.o: drawings.c
 	$(CC) $(CFLAGS) `pkg-config --cflags opencv` drawings.c
+
+image.o: image.c
+	$(CC) $(CFLAGS) `pkg-config --cflags opencv` image.c
+
 clean:
 	rm -rf *o globe
 
