@@ -7,8 +7,7 @@
 #include "log.h"
 #include "render.h"
 #include "transform.h"
-
-IplImage * sph_image;
+#include "image.h"
 
 CvFont bg_font;
 CvFont fg_font;
@@ -35,15 +34,17 @@ void render_init() {
   atexit(&render_close);
 }
 
-void render() {
+int render(int delay) {
+  render_images();
   if (par_coor_draw)
     render_coordinates();
   render_drawings();
   render_catalogue();
   if (par_sph_win) {
     cvShowImage("Spherical image", sph_image);
-    cvWaitKey(0);
+    return cvWaitKey(delay);
   }
+  return -1;
 }
 
 void render_catalogue() {

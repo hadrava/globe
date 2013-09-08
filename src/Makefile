@@ -6,7 +6,7 @@ CFLAGS=-c -Wall -std=c99 -ggdb
 all: globe
 
 globe: main.o params.o help.o log.o catalogue.o render.o transform.o drawings.o image.o
-	$(CC) $(LDFLAGS) `pkg-config --libs opencv` main.o params.o help.o log.o catalogue.o render.o transform.o drawings.o image.o -o globe
+	$(CC) $(LDFLAGS) `pkg-config --libs opencv` -lm main.o params.o help.o log.o catalogue.o render.o transform.o drawings.o image.o -o globe
 
 main.o: main.c
 	$(CC) $(CFLAGS) main.c

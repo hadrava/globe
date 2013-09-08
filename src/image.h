@@ -10,6 +10,7 @@ struct image_params {
   double directionlatmin;
   double directionlongmin;
   double focallength;
+  double zrotationmin;
   double xshiftpix;
   double yshiftpix;
 };
@@ -20,8 +21,12 @@ struct image_list {
   struct image_list *next;
 };
 
-void image_load(char* name);
+struct image_params * image_active_params;
+
+void image_load(const char* name);
 struct image_params *image_params_cpy(struct image_params *dest, const struct image_params *src);
 void image_close_all();
+
+void render_images();
 
 #endif
