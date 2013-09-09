@@ -43,9 +43,9 @@ void image_load(const char* name) {
   else {
     img->params.latmin           = 0;
     img->params.longmin          = 0;
-    img->params.distance         = 4;
+    img->params.distance         = 8;
     img->params.directionlatmin  = 0;
-    img->params.directionlongmin = 3.14;
+    img->params.directionlongmin = 0;
     img->params.focallength      = 2000;
     img->params.zrotationmin     = 0;
     img->params.xshiftpix        = 0;
@@ -71,10 +71,10 @@ void render_images() {
   while (list) {
     for (int j=0; j<sph_image->height; j++) {
       for (int i=0; i<sph_image->width; i++) {
-        CvPoint position = sph_to_image(sph_image_to_sph(cvPoint(i,j)), &list->params, sph_image->width, sph_image->height);
+        CvPoint position = sph_to_image(sph_image_to_sph(cvPoint(i,j)), &list->params, list->image->width, list->image->height);
 	int dst = i*3 + j*sph_image->widthStep;
 	int src = position.x*3 + position.y*list->image->widthStep;
-	if ((src + 2 >= list->image->imageSize) || (src < 0)) {
+	if (position.x < 0 || position.y < 0 || position.x > list->image->width || position.y > list->image->height) {
           sph_image->imageData[dst    ] = 0;
           sph_image->imageData[dst + 1] = 0;
           sph_image->imageData[dst + 2] = 0;

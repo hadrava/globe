@@ -17,8 +17,8 @@ CvPoint2D64f sph_image_to_sph(CvPoint image){
 }
 
 CvPoint sph_to_image(CvPoint2D64f spherical, struct image_params *params, int width, int height) {
-  double lon = (spherical.x-params->longmin) /10800*PI;
-  double lat = (spherical.y-params->latmin)  /10800*PI;
+  double lon = (spherical.x-params->longmin) /10800*PI;//does not work
+  double lat = (spherical.y-params->latmin)  /10800*PI;//does not work
 
   double x = cos(lat)*cos(lon);
   double y = cos(lat)*sin(lon);
@@ -27,15 +27,18 @@ CvPoint sph_to_image(CvPoint2D64f spherical, struct image_params *params, int wi
   x-=params->distance;
 
   double r = sqrt(x*x + y*y + z*z);
-  lon = atan(y/x);
+  lon = atan(-y/x);
   lat = asin(z/r);
 
-  lon -= params->directionlongmin;
-  lat -= params->directionlatmin;
+  if (r*r + 1 > params->distance*params->distance)
+    return cvPoint(-1,-1);
 
-  x = r*cos(lat)*cos(lon);
-  y = r*cos(lat)*sin(lon);
-  z = r*sin(lat);
+  lon -= params->directionlongmin;//does not work
+  lat -= params->directionlatmin;//does not work
+
+  x = cos(lat)*cos(lon);
+  y = cos(lat)*sin(lon);
+  z = sin(lat);
 
   lat = z*cos(params->zrotationmin) - y*sin(params->zrotationmin);
   y   = z*sin(params->zrotationmin) + y*cos(params->zrotationmin);
@@ -45,7 +48,7 @@ CvPoint sph_to_image(CvPoint2D64f spherical, struct image_params *params, int wi
   z*=params->focallength/x;
 
   x=width/2 +y+params->xshiftpix;
-  y=height/2+z+params->yshiftpix;
+  y=height/2-z+params->yshiftpix;
 
 
   CvPoint image = cvPoint(x,y);

@@ -34,12 +34,15 @@ void render_init() {
   atexit(&render_close);
 }
 
-int render(int delay) {
+void render() {
   render_images();
   if (par_coor_draw)
     render_coordinates();
   render_drawings();
   render_catalogue();
+}
+
+int display(int delay) {
   if (par_sph_win) {
     cvShowImage("Spherical image", sph_image);
     return cvWaitKey(delay);
