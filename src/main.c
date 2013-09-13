@@ -6,6 +6,7 @@
 #include "drawings.h"
 #include "image.h"
 #include "interactive.h"
+#include "render_image.h"
 
 int main(int argc, char *argv[]) {
   parse_params(argc, argv);
@@ -23,6 +24,7 @@ int main(int argc, char *argv[]) {
   drawings_read();
 
   render_init();
+  render_image_init(par_threads);
 
   render();
   if (par_interactive)

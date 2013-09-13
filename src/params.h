@@ -15,6 +15,7 @@ extern float par_drawings_size;
 extern int par_coor_draw;
 extern int par_coor_step;
 extern int par_interactive;
+extern int par_threads;
 
 void parse_params(int argc, char *argv[]);
 void print_params();

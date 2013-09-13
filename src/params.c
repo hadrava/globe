@@ -13,6 +13,7 @@
 #define DEF_PAR_STAR_SIZE 1.0
 #define DEF_PAR_DRAWINGS_SIZE 1.0
 #define DEF_PAR_COOR_STEP 10
+#define DEF_PAR_THREADS 4
 
 int par_verbose = 0;
 int par_help = 0;
@@ -28,6 +29,7 @@ float par_drawings_size = DEF_PAR_DRAWINGS_SIZE;
 int par_coor_draw = 0;
 int par_coor_step = DEF_PAR_COOR_STEP;
 int par_interactive = 0;
+int par_threads = DEF_PAR_THREADS;
 
 void parse_params(int argc, char *argv[]) {
   for(int i=1; i<argc; i++) {
@@ -47,6 +49,8 @@ void parse_params(int argc, char *argv[]) {
       PARSE_PAR("--coordinates-draw", "%d", par_coor_draw);
       PARSE_PAR("--coordinates-step", "%d", par_coor_step);
       PARSE_STRING_PAR("--img", image_load(value); value);//WARN: macro hack
+      PARSE_PAR("--interactive", "%d", par_interactive);
+      PARSE_PAR("--threads", "%d", par_threads);
     }
     else {
       DETECT_OPT("--verbose", par_verbose++);
@@ -75,6 +79,7 @@ void print_params() {
   lprintf("--coordinates-step=%d\n", par_coor_step);
   lprintf("--img=NOT_IMPLEMENTED\n");//TODO
   lprintf("--interactive=%d\n", par_interactive);
+  lprintf("--threads=%d\n", par_threads);
 }
 
 void print_available_params(){
@@ -94,6 +99,7 @@ void print_available_params(){
   lprintf("    --coordinates-draw[=1]    draw spherical coordinates\n");
   lprintf("    --coordinates-step=DEG    set coordinate spacing in degrees (default: %d)\n", DEF_PAR_COOR_STEP);
   lprintf("    --img=FILE                load image of globe (can be used multiple times)\n");
-  lprintf("    --interactive             run in interactive mode\n");
+  lprintf("    --interactive[=1]         run in interactive mode\n");
+  lprintf("    --threads=NUMBER          specify number of working threads (default: %d)\n", DEF_PAR_THREADS);
 }
 

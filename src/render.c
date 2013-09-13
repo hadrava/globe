@@ -7,7 +7,7 @@
 #include "log.h"
 #include "render.h"
 #include "transform.h"
-#include "image.h"
+#include "render_image.h"
 
 CvFont bg_font;
 CvFont fg_font;
