@@ -58,6 +58,8 @@ void image_load(const char* name) {
   img->next = image_list_head;
   image_list_head = img;
   image_active_params = &img->params; // TODO: small hack
+
+  atexit(&image_close_all);
 }
 
 void image_params_print(const struct image_params *params) {
@@ -103,5 +105,4 @@ void render_images() {
     }
     list = list->next;
   }
-  atexit(&image_close_all);
 }
