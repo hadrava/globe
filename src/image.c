@@ -83,9 +83,11 @@ void render_images() {
   struct image_list * list = image_list_head;
   while (list) {
     image_params_print(&list->params);
+    struct projection_params proj_params;
+    sph_to_image_precalculate_projection(&list->params, list->image->width, list->image->height, &proj_params);
     for (int j=0; j<sph_image->height; j++) {
       for (int i=0; i<sph_image->width; i++) {
-        CvPoint position = sph_to_image(sph_image_to_sph(cvPoint(i,j)), &list->params, list->image->width, list->image->height);
+        CvPoint position = sph_to_image(sph_image_to_sph(cvPoint(i,j)), &list->params, &proj_params);
 	int dst = i*3 + j*sph_image->widthStep;
 	int src = position.x*3 + position.y*list->image->widthStep;
 	if (position.x < 0 || position.y < 0 || position.x > list->image->width || position.y > list->image->height) {

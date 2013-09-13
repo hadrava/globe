@@ -16,45 +16,55 @@ CvPoint2D64f sph_image_to_sph(CvPoint image){
   return spherical;
 }
 
-CvPoint sph_to_image(CvPoint2D64f spherical, struct image_params *params, int width, int height) {
+void sph_to_image_precalculate_projection(const struct image_params *params, int width, int height, struct projection_params *proj_params) {
+  proj_params->c_lon1 = cos(-params->longmin/10800*PI);
+  proj_params->s_lon1 = sin(-params->longmin/10800*PI);
+  proj_params->c_lat1 = cos(-params->latmin/10800*PI);
+  proj_params->s_lat1 = sin(-params->latmin/10800*PI);
+  proj_params->c_lat2 = cos(-params->directionlatmin/10800*PI);
+  proj_params->s_lat2 = sin(-params->directionlatmin/10800*PI);
+  proj_params->c_lon2 = cos(-params->directionlongmin/10800*PI);
+  proj_params->s_lon2 = sin(-params->directionlongmin/10800*PI);
+  proj_params->c_rot1 = cos(params->zrotationmin/10800*PI);
+  proj_params->s_rot1 = sin(params->zrotationmin/10800*PI);
+  proj_params->img_center_x = width/2 + params->xshiftpix;
+  proj_params->img_center_y = height/2 + params->yshiftpix;
+}
+
+CvPoint sph_to_image(CvPoint2D64f spherical, const struct image_params *im_params, const struct projection_params *params) {
   double lon = spherical.x / 10800 * PI;
   double lat = spherical.y / 10800 * PI;
 
-  double x = cos(lat)*cos(lon);
-  double y = cos(lat)*sin(lon);
+  double c_lat = cos(lat); //small optimization
+  double x = c_lat*cos(lon);
+  double y = c_lat*sin(lon);
   double z = sin(lat);
 
-  double a = x*cos(-params->longmin/10800*PI) - y*sin(-params->longmin/10800*PI);
-         y = x*sin(-params->longmin/10800*PI) + y*cos(-params->longmin/10800*PI);
 
-         x = a*cos(-params->latmin/10800*PI) - z*sin(-params->latmin/10800*PI);
-         z = a*sin(-params->latmin/10800*PI) + z*cos(-params->latmin/10800*PI);
+  double a = x*params->c_lon1 - y*params->s_lon1;
+         y = x*params->s_lon1 + y*params->c_lon1;
+
+         x = a*params->c_lat1 - z*params->s_lat1;
+         z = a*params->s_lat1 + z*params->c_lat1;
 
 
   //move to camera coordinates (and mirror)
-  x-=params->distance;
-  x=-x;
+  x = -x + im_params->distance;
 
-  double r = sqrt(x*x + y*y + z*z);
-
-  if (r*r + 1 > params->distance*params->distance)
+  if (x*x + y*y + z*z + 1 > im_params->distance*im_params->distance)
     return cvPoint(-1,-1);
 
-  a = x*cos(-params->directionlatmin/10800*PI) - z*sin(-params->directionlatmin/10800*PI);
-  z = x*sin(-params->directionlatmin/10800*PI) + z*cos(-params->directionlatmin/10800*PI);
+  a = x*params->c_lat2 - z*params->s_lat2;
+  z = x*params->s_lat2 + z*params->c_lat2;
 
-  x = a*cos(-params->directionlongmin/10800*PI) - y*sin(-params->directionlongmin/10800*PI);
-  y = a*sin(-params->directionlongmin/10800*PI) + y*cos(-params->directionlongmin/10800*PI);
+  x = a*params->c_lon2 - y*params->s_lon2;
+  y = a*params->s_lon2 + y*params->c_lon2;
 
-  a   = z*cos(params->zrotationmin/10800*PI) - y*sin(params->zrotationmin/10800*PI);
-  y   = z*sin(params->zrotationmin/10800*PI) + y*cos(params->zrotationmin/10800*PI);
-  z   = a;
+  a = z*params->c_rot1 - y*params->s_rot1;
+  y = z*params->s_rot1 + y*params->c_rot1;
 
-  y*=params->focallength/x;
-  z*=params->focallength/x;
+  y *= im_params->focallength/x;
+  z = a * im_params->focallength/x;
 
-  x=width/2 +y+params->xshiftpix;
-  y=height/2-z+params->yshiftpix;
-
-  return cvPoint(x,y);
+  return cvPoint(y + params->img_center_x, -z + params->img_center_y);
 }
