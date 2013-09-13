@@ -22,7 +22,7 @@ void image_load(const char* name) {
   lprintf("Loaded image \"%s\" ", name);
 
   int len = strlen(name);
-  char * filename = malloc(len*sizeof(char));
+  char * filename = malloc((len+1)*sizeof(char));
   strcpy(filename, name);
   filename[--len] = 'r';
   filename[--len] = 'a';
@@ -52,6 +52,8 @@ void image_load(const char* name) {
     img->params.yshiftpix        = 0;
     lprintf("with default parameters.\n");
   }
+  fclose(param_file);
+  img->params.paramfilename = filename;
 
   img->next = image_list_head;
   image_list_head = img;
@@ -75,12 +77,14 @@ void image_close_all() {
   while (image_list_head) {
     struct image_list *img = image_list_head;
     image_list_head = image_list_head->next;
+    free(img->params.paramfilename);
     free(img);
   }
 }
 
 void render_images() {
   struct image_list * list = image_list_head;
+  cvZero(sph_image);
   while (list) {
     image_params_print(&list->params);
     struct projection_params proj_params;
@@ -90,12 +94,7 @@ void render_images() {
         CvPoint position = sph_to_image(sph_image_to_sph(cvPoint(i,j)), &list->params, &proj_params);
 	int dst = i*3 + j*sph_image->widthStep;
 	int src = position.x*3 + position.y*list->image->widthStep;
-	if (position.x < 0 || position.y < 0 || position.x > list->image->width || position.y > list->image->height) {
-          sph_image->imageData[dst    ] = 0;
-          sph_image->imageData[dst + 1] = 0;
-          sph_image->imageData[dst + 2] = 0;
-	}
-	else {
+	if (position.x >= 0 && position.y >= 0 && position.x < list->image->width && position.y < list->image->height) {
           sph_image->imageData[dst    ] = list->image->imageData[src    ];
           sph_image->imageData[dst + 1] = list->image->imageData[src + 1];
           sph_image->imageData[dst + 2] = list->image->imageData[src + 2];

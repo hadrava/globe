@@ -13,6 +13,7 @@ struct image_params {
   double zrotationmin;
   double xshiftpix;
   double yshiftpix;
+  char * paramfilename;
 };
 
 struct image_list {

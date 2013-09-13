@@ -108,5 +108,7 @@ int main(int argc, char *argv[]) {
         ;;
     }
   }
+  render_close();
+  image_close_all();
   return 0;
 }
