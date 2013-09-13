@@ -2,3 +2,6 @@
 globe
 *.log
 *.png
+*.jpg
+*.JPG
+*.par
