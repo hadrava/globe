@@ -27,6 +27,7 @@ char * par_drawings_file = NULL;
 float par_drawings_size = DEF_PAR_DRAWINGS_SIZE;
 int par_coor_draw = 0;
 int par_coor_step = DEF_PAR_COOR_STEP;
+int par_interactive = 0;
 
 void parse_params(int argc, char *argv[]) {
   for(int i=1; i<argc; i++) {
@@ -52,6 +53,7 @@ void parse_params(int argc, char *argv[]) {
       DETECT_OPT("--help", par_help = 1);
       DETECT_OPT("--spherical-window", par_sph_win = 1);
       DETECT_OPT("--coordinates-draw", par_coor_draw = 1);
+      DETECT_OPT("--interactive", par_interactive = 1);
     }
     fprintf(stderr, "Unknown parameter: \"%s\"\n", argv[i]); //TODO: how to log this? Log is not prepared yet...
   }
@@ -72,6 +74,7 @@ void print_params() {
   lprintf("--coordinates-draw=%d\n", par_coor_draw);
   lprintf("--coordinates-step=%d\n", par_coor_step);
   lprintf("--img=NOT_IMPLEMENTED\n");//TODO
+  lprintf("--interactive=%d\n", par_interactive);
 }
 
 void print_available_params(){
@@ -91,5 +94,6 @@ void print_available_params(){
   lprintf("    --coordinates-draw[=1]    draw spherical coordinates\n");
   lprintf("    --coordinates-step=DEG    set coordinate spacing in degrees (default: %d)\n", DEF_PAR_COOR_STEP);
   lprintf("    --img=FILE                load image of globe (can be used multiple times)\n");
+  lprintf("    --interactive             run in interactive mode\n");
 }
 
