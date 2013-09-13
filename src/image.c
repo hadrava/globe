@@ -61,16 +61,16 @@ void image_load(const char* name) {
 }
 
 void image_params_print(const struct image_params *params) {
-  lprintf("image parameters:\n");
-  lprintf("latmin           = %lf\n",params->latmin          );
-  lprintf("longmin          = %lf\n",params->longmin         );
-  lprintf("distance         = %lf\n",params->distance        );
-  lprintf("directionlatmin  = %lf\n",params->directionlatmin );
-  lprintf("directionlongmin = %lf\n",params->directionlongmin);
-  lprintf("focallength      = %lf\n",params->focallength     );
-  lprintf("zrotationmin     = %lf\n",params->zrotationmin    );
-  lprintf("xshiftpix        = %lf\n",params->xshiftpix       );
-  lprintf("yshiftpix        = %lf\n",params->yshiftpix       );
+  vlprintf("image parameters:\n");
+  vlprintf("latmin           = %lf\n",params->latmin          );
+  vlprintf("longmin          = %lf\n",params->longmin         );
+  vlprintf("distance         = %lf\n",params->distance        );
+  vlprintf("directionlatmin  = %lf\n",params->directionlatmin );
+  vlprintf("directionlongmin = %lf\n",params->directionlongmin);
+  vlprintf("focallength      = %lf\n",params->focallength     );
+  vlprintf("zrotationmin     = %lf\n",params->zrotationmin    );
+  vlprintf("xshiftpix        = %lf\n",params->xshiftpix       );
+  vlprintf("yshiftpix        = %lf\n",params->yshiftpix       );
 }
 
 void image_close_all() {
