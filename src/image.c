@@ -58,6 +58,19 @@ void image_load(const char* name) {
   image_active_params = &img->params; // TODO: small hack
 }
 
+void image_params_print(const struct image_params *params) {
+  lprintf("image parameters:\n");
+  lprintf("latmin           = %lf\n",params->latmin          );
+  lprintf("longmin          = %lf\n",params->longmin         );
+  lprintf("distance         = %lf\n",params->distance        );
+  lprintf("directionlatmin  = %lf\n",params->directionlatmin );
+  lprintf("directionlongmin = %lf\n",params->directionlongmin);
+  lprintf("focallength      = %lf\n",params->focallength     );
+  lprintf("zrotationmin     = %lf\n",params->zrotationmin    );
+  lprintf("xshiftpix        = %lf\n",params->xshiftpix       );
+  lprintf("yshiftpix        = %lf\n",params->yshiftpix       );
+}
+
 void image_close_all() {
   while (image_list_head) {
     struct image_list *img = image_list_head;
@@ -69,6 +82,7 @@ void image_close_all() {
 void render_images() {
   struct image_list * list = image_list_head;
   while (list) {
+    image_params_print(&list->params);
     for (int j=0; j<sph_image->height; j++) {
       for (int i=0; i<sph_image->width; i++) {
         CvPoint position = sph_to_image(sph_image_to_sph(cvPoint(i,j)), &list->params, list->image->width, list->image->height);
