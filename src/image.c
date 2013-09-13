@@ -103,4 +103,5 @@ void render_images() {
     }
     list = list->next;
   }
+  atexit(&image_close_all);
 }
