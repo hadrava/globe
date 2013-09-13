@@ -53,19 +53,19 @@ int main(int argc, char *argv[]) {
 	render();
 	break;;
       case 'f':
-        image_active_params->directionlatmin +=0.01;
+        image_active_params->directionlatmin +=0.3;
 	render();
 	break;;
       case 'v':
-        image_active_params->directionlatmin -=0.01;
+        image_active_params->directionlatmin -=0.3;
 	render();
 	break;;
       case 'g':
-        image_active_params->directionlongmin +=0.01;
+        image_active_params->directionlongmin +=0.3;
 	render();
 	break;;
       case 'b':
-        image_active_params->directionlongmin -=0.01;
+        image_active_params->directionlongmin -=0.3;
 	render();
 	break;;
       case 't'://DEBUG
@@ -81,11 +81,11 @@ int main(int argc, char *argv[]) {
 	render();
 	break;;
       case 'j':
-        image_active_params->zrotationmin += 0.3;
+        image_active_params->zrotationmin += 1000;
 	render();
 	break;;
       case 'm':
-        image_active_params->zrotationmin -= 0.3;
+        image_active_params->zrotationmin -= 1000;
 	render();
 	break;;
       case 'k':
