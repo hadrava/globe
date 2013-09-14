@@ -18,14 +18,17 @@ struct image_params {
 
 struct image_list {
   IplImage *image;
+  IplImage *window_image;
   struct image_params params;
+  char *filename;
+  int display_window;
   struct image_list *next;
 };
 
-extern struct image_list * image_list_head;
-extern struct image_params * image_active_params; //hack
+extern struct image_list *image_list_head;
+extern struct image_params *image_active_params; //hack
 
-void image_load(const char* name);
+void image_load(char *name);
 void image_params_print(const struct image_params *params);
 struct image_params *image_params_cpy(struct image_params *dest, const struct image_params *src);
 void image_close_all();

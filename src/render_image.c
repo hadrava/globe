@@ -1,3 +1,4 @@
+#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
 #include <pthread.h>
 #include "image.h"
@@ -19,6 +20,21 @@ void *render_thread_main(void *arg) {
     pthread_barrier_wait(&render_barrier_finish);
   }
   pthread_exit(NULL);
+}
+
+void render_images_window() {
+  struct image_list * list = image_list_head;
+  while (list) {
+    if (list->display_window) {
+      cvResize(list->image, list->window_image, CV_INTER_CUBIC);
+      struct projection_params proj_params;
+      sph_to_image_precalculate_projection(&list->params, list->image->width, list->image->height, &proj_params);
+   //     CvPoint position = sph_to_image(sph_image_to_sph(cvPoint(i,j)), &list->params, &proj_params);
+//	star
+      cvShowImage(list->filename, list->window_image);
+    }
+    list = list->next;
+  }
 }
 
 void render_images_threaded(int line) {
@@ -74,4 +90,5 @@ void render_images() {
   pthread_barrier_wait(&render_barrier_run);
   render_images_threaded(render_image_threads);
   pthread_barrier_wait(&render_barrier_finish);
+  render_images_window();
 }

@@ -3,6 +3,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "image.h"
 #include "log.h"
+#include "params.h"
 
 struct image_list * image_list_head = NULL;
 struct image_params * image_active_params = NULL; //hack
@@ -13,13 +14,13 @@ struct image_params *image_params_cpy(struct image_params *dest, const struct im
   return memcpy(dest, src, sizeof(struct image_params));
 }
 
-void image_load(const char* name) {
+void image_load(char *name) {
   struct image_list *img = malloc(sizeof(struct image_list));
   img->image = cvLoadImage(name, CV_LOAD_IMAGE_COLOR);
   lprintf("Loaded image \"%s\" ", name);
 
   int len = strlen(name);
-  char * filename = malloc((len+1)*sizeof(char));
+  char *filename = malloc((len+1)*sizeof(char));
   strcpy(filename, name);
   filename[--len] = 'r';
   filename[--len] = 'a';
@@ -52,6 +53,13 @@ void image_load(const char* name) {
   fclose(param_file);
   img->params.paramfilename = filename;
 
+  img->filename = name;
+  img->display_window = par_image_win;
+  if (img->display_window) {
+    cvNamedWindow(img->filename, CV_WINDOW_AUTOSIZE | CV_WINDOW_KEEPRATIO | CV_GUI_EXPANDED);
+    img->window_image = cvCreateImage(cvSize(par_image_width, par_image_height), 8, 3);
+  }
+
   img->next = image_list_head;
   image_list_head = img;
   image_active_params = &img->params; // TODO: small hack
@@ -76,6 +84,10 @@ void image_close_all() {
   while (image_list_head) {
     struct image_list *img = image_list_head;
     image_list_head = image_list_head->next;
+    if (img->display_window) {
+      cvDestroyWindow(img->filename);
+      cvReleaseImage(&img->window_image);
+    }
     free(img->params.paramfilename);
     free(img);
   }

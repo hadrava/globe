@@ -16,6 +16,9 @@ extern int par_coor_draw;
 extern int par_coor_step;
 extern int par_interactive;
 extern int par_threads;
+extern int par_image_win;
+extern int par_image_width;
+extern int par_image_height;
 
 void parse_params(int argc, char *argv[]);
 void print_params();

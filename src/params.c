@@ -14,6 +14,8 @@
 #define DEF_PAR_DRAWINGS_SIZE 1.0
 #define DEF_PAR_COOR_STEP 10
 #define DEF_PAR_THREADS 4
+#define DEF_PAR_IMAGE_WIDTH 800
+#define DEF_PAR_IMAGE_HEIGHT 600
 
 int par_verbose = 0;
 int par_help = 0;
@@ -30,6 +32,10 @@ int par_coor_draw = 0;
 int par_coor_step = DEF_PAR_COOR_STEP;
 int par_interactive = 0;
 int par_threads = DEF_PAR_THREADS;
+int par_image_win = 0;
+int par_image_width = DEF_PAR_IMAGE_WIDTH;
+int par_image_height = DEF_PAR_IMAGE_HEIGHT;
+
 
 void parse_params(int argc, char *argv[]) {
   for(int i=1; i<argc; i++) {
@@ -51,6 +57,9 @@ void parse_params(int argc, char *argv[]) {
       PARSE_STRING_PAR("--img", image_load(value); value);//WARN: macro hack
       PARSE_PAR("--interactive", "%d", par_interactive);
       PARSE_PAR("--threads", "%d", par_threads);
+      PARSE_PAR("--image-window", "%d", par_image_win);
+      PARSE_PAR("--image-width", "%d", par_image_width);
+      PARSE_PAR("--image-height", "%d", par_image_height);
     }
     else {
       DETECT_OPT("--verbose", par_verbose++);
@@ -58,6 +67,7 @@ void parse_params(int argc, char *argv[]) {
       DETECT_OPT("--spherical-window", par_sph_win = 1);
       DETECT_OPT("--coordinates-draw", par_coor_draw = 1);
       DETECT_OPT("--interactive", par_interactive = 1);
+      DETECT_OPT("--image-window", par_image_win = 1);
     }
     fprintf(stderr, "Unknown parameter: \"%s\"\n", argv[i]); //TODO: how to log this? Log is not prepared yet...
   }
@@ -80,6 +90,9 @@ void print_params() {
   lprintf("--img=NOT_IMPLEMENTED\n");//TODO
   lprintf("--interactive=%d\n", par_interactive);
   lprintf("--threads=%d\n", par_threads);
+  lprintf("--image-window=%d\n", par_image_win);
+  lprintf("--image-width=%d\n", par_image_width);
+  lprintf("--image-height=%d\n", par_image_height);
 }
 
 void print_available_params(){
@@ -101,5 +114,8 @@ void print_available_params(){
   lprintf("    --img=FILE                load image of globe (can be used multiple times)\n");
   lprintf("    --interactive[=1]         run in interactive mode\n");
   lprintf("    --threads=NUMBER          specify number of working threads (default: %d)\n", DEF_PAR_THREADS);
+  lprintf("    --image-window[=1]        show input image in window (must be before --img)\n");
+  lprintf("    --image-width=PIX         set width of input image window (defult: %d)\n", DEF_PAR_IMAGE_WIDTH);
+  lprintf("    --image-height=PIX        set height of input image window (default: %d)\n", DEF_PAR_IMAGE_HEIGHT);
 }
 
