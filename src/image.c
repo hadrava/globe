@@ -9,8 +9,6 @@
 struct image_list * image_list_head = NULL;
 struct image_list * image_list_tail = NULL;
 
-static FILE *param_file;
-
 struct image_params *image_params_cpy(struct image_params *dest, const struct image_params *src) {
   return memcpy(dest, src, sizeof(struct image_params));
 }
@@ -26,7 +24,7 @@ void image_load(char *name) {
   filename[--len] = 'r';
   filename[--len] = 'a';
   filename[--len] = 'p';
-  param_file = fopen(filename, "r");
+  FILE *param_file = fopen(filename, "r");
   if (param_file) {
     fscanf(param_file, "%lf", &img->params.latmin);
     fscanf(param_file, "%lf", &img->params.longmin);
@@ -38,6 +36,7 @@ void image_load(char *name) {
     fscanf(param_file, "%lf", &img->params.xshiftpix);
     fscanf(param_file, "%lf", &img->params.yshiftpix);
     lprintf("with parameters from file \"%s\".\n", filename);
+    fclose(param_file);
   }
   else {
     img->params.latmin           = 0;
@@ -51,13 +50,12 @@ void image_load(char *name) {
     img->params.yshiftpix        = 0;
     lprintf("with default parameters.\n");
   }
-  fclose(param_file);
   img->params.paramfilename = filename;
 
   img->filename = name;
   img->display_window = par_image_win;
   if (img->display_window) {
-    lprintf("creating window named %s for image param %s\n", img->filename, img->params.paramfilename);
+    lprintf("creating window named \"%s\" for image param \"%s\"\n", img->filename, img->params.paramfilename);
     img->window_image = cvCreateImage(cvSize(par_image_width, par_image_height), 8, 3);
     cvZero(img->window_image);
     cvNamedWindow(img->filename, CV_WINDOW_AUTOSIZE | CV_WINDOW_KEEPRATIO | CV_GUI_EXPANDED);
@@ -100,4 +98,19 @@ void image_close_all() {
     free(img->params.paramfilename);
     free(img);
   }
+}
+
+void image_save_params(struct image_list *img) {
+  lprintf("Saving image params of image \"%s\" to file \"%s\"\n", img->filename, img->params.paramfilename);
+  FILE *param_file = fopen(img->params.paramfilename, "w");
+  fprintf(param_file, "%lf\n", img->params.latmin);
+  fprintf(param_file, "%lf\n", img->params.longmin);
+  fprintf(param_file, "%lf\n", img->params.distance);
+  fprintf(param_file, "%lf\n", img->params.directionlatmin);
+  fprintf(param_file, "%lf\n", img->params.directionlongmin);
+  fprintf(param_file, "%lf\n", img->params.focallength);
+  fprintf(param_file, "%lf\n", img->params.zrotationmin);
+  fprintf(param_file, "%lf\n", img->params.xshiftpix);
+  fprintf(param_file, "%lf\n", img->params.yshiftpix);
+  fclose(param_file);
 }

@@ -119,6 +119,9 @@ void interactive_loop() {
         fit_active->params.yshiftpix -= 100;
 	render();
 	break;
+      case 65471: //<F2>
+        image_save_params(fit_active);
+	break;
       default:
         dlprintf("Unhandled keypress %i\n", key);
     }

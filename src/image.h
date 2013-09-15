@@ -33,5 +33,6 @@ struct image_params *image_params_cpy(struct image_params *dest, const struct im
 void image_load(char *name);
 void image_params_print(const struct image_params *params);
 void image_close_all();
+void image_save_params(struct image_list *img);
 
 #endif
