@@ -28,7 +28,7 @@ void sph_to_image_precalculate_projection(const struct image_params *params, int
 CvPoint sph_to_image(CvPoint2D64f spherical, const struct image_params *im_params, const struct projection_params *params);
 CvPoint sph_to_image_slow(CvPoint2D64f spherical, const struct image_params *im_params, int width, int height);
 
-CvPoint image_to_image_window(CvPoint image, IplImage *image_param, IplImage *image_window_param);
-CvPoint image_window_to_image(CvPoint image_window, IplImage *image_window_param, IplImage *image_param);
+CvPoint image_to_image_window(const CvPoint image, const IplImage *image_param, const IplImage *image_window_param);
+CvPoint image_window_to_image(const CvPoint image_window, const IplImage *image_window_param, const IplImage *image_param);
 
 #endif

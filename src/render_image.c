@@ -5,6 +5,8 @@
 #include "log.h"
 #include "transform.h"
 #include "render.h"
+#include "fit.h"
+#include "params.h"
 #include "render_image.h"
 
 static int render_image_threads = 0;
@@ -56,11 +58,20 @@ void render_images_window() {
       cvResize(list->image, list->window_image, CV_INTER_CUBIC);
       struct projection_params proj_params;
       sph_to_image_precalculate_projection(&list->params, list->image->width, list->image->height, &proj_params);
-   //     CvPoint position = sph_to_image(sph_image_to_sph(cvPoint(i,j)), &list->params, &proj_params);
-//	star
+      if (list == fit_active)
+        render_fit_distances(list->window_image, list->image, fit_points);
       cvShowImage(list->filename, list->window_image);
     }
     list = list->prev;
+  }
+}
+
+void render_fit_distances(IplImage *window_image, const IplImage *image, struct fit_point_list *points) {
+  while (points) {
+    cvCircle(window_image, image_to_image_window(points->globe_position_min, image, window_image), par_star_size, CV_RGB(255,0,0), 3, CV_AA, 0);
+    cvCircle(window_image, image_to_image_window(points->in_image, image, window_image), par_star_size, CV_RGB(255,255,0), 3, CV_AA, 0);
+
+    points = points->next;
   }
 }
 

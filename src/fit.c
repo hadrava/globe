@@ -3,7 +3,7 @@
 #include "image.h"
 #include "fit.h"
 
-struct image_list * fit_active = NULL;
+struct image_list *fit_active = NULL;
 
 struct fit_point_list *fit_points = NULL;
 

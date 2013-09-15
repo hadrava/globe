@@ -1,6 +1,7 @@
 #include <opencv2/highgui/highgui_c.h>
 #include "log.h"
 #include "render.h"
+#include "render_image.h"
 #include "image.h"
 #include "fit.h"
 #include "transform.h"
@@ -19,8 +20,10 @@ void interactive_spherical_mouse(int event, int x, int y, int flags, void* param
       render_catalogue();
       break;;
     case CV_EVENT_RBUTTONDOWN:
-      if (selected_star != -1)
+      if (selected_star != -1) {
         fit_add_point(cvPoint(cat_stars[selected_star].longmin, cat_stars[selected_star].latmin), sph_to_image_slow(sph_image_to_sph(cvPoint(x, y)), &fit_active->params, fit_active->image->width, fit_active->image->height));
+	render_images_window();
+      }
       break;;
     case CV_EVENT_MOUSEMOVE:
     case CV_EVENT_MBUTTONDBLCLK:
