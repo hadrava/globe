@@ -26,7 +26,7 @@ void *render_thread_main(void *arg) {
 }
 
 void render_images_threaded(int line, int verbose) {
-  struct image_list * list = image_list_head;
+  struct image_list * list = image_list_tail;
   while (list) {
     if (verbose)
       image_params_print(&list->params);
@@ -45,12 +45,12 @@ void render_images_threaded(int line, int verbose) {
         }
       }
     }
-    list = list->next;
+    list = list->prev;
   }
 }
 
 void render_images_window() {
-  struct image_list * list = image_list_head;
+  struct image_list * list = image_list_tail;
   while (list) {
     if (list->display_window) {
       cvResize(list->image, list->window_image, CV_INTER_CUBIC);
@@ -60,7 +60,7 @@ void render_images_window() {
 //	star
       cvShowImage(list->filename, list->window_image);
     }
-    list = list->next;
+    list = list->prev;
   }
 }
 

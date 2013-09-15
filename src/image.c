@@ -7,6 +7,7 @@
 #include "params.h"
 
 struct image_list * image_list_head = NULL;
+struct image_list * image_list_tail = NULL;
 struct image_params * image_active_params = NULL; //hack
 
 static FILE *param_file;
@@ -66,6 +67,11 @@ void image_load(char *name) {
   }
 
   img->next = image_list_head;
+  img->prev = NULL;
+  if (img->next)
+    img->next->prev = img;
+  else
+    image_list_tail = img;
   image_list_head = img;
   image_active_params = &img->params; // TODO: small hack
 

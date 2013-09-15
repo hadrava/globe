@@ -23,9 +23,11 @@ struct image_list {
   char *filename;
   int display_window;
   struct image_list *next;
+  struct image_list *prev;
 };
 
 extern struct image_list *image_list_head;
+extern struct image_list *image_list_tail;
 extern struct image_params *image_active_params; //hack
 
 struct image_params *image_params_cpy(struct image_params *dest, const struct image_params *src);
