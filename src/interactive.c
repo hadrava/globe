@@ -21,7 +21,13 @@ void interactive_spherical_mouse(int event, int x, int y, int flags, void* param
       break;;
     case CV_EVENT_RBUTTONDOWN:
       if (selected_star != -1) {
-        fit_add_point(cvPoint(cat_stars[selected_star].longmin, cat_stars[selected_star].latmin), sph_to_image_slow(sph_image_to_sph(cvPoint(x, y)), &fit_active->params, fit_active->image->width, fit_active->image->height));
+        fit_add_point_star(cvPoint(cat_stars[selected_star].longmin, cat_stars[selected_star].latmin), sph_to_image_slow(sph_image_to_sph(cvPoint(x, y)), &fit_active->params, fit_active->image->width, fit_active->image->height), selected_star);
+	render_images_window();
+      }
+      break;;
+    case CV_EVENT_RBUTTONDBLCLK:
+      if (selected_star != -1) {
+	fit_points = fit_remove_point(fit_find_star(selected_star), fit_points);
 	render_images_window();
       }
       break;;

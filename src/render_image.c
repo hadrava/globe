@@ -28,7 +28,7 @@ void *render_thread_main(void *arg) {
 }
 
 void render_images_threaded(int line, int verbose) {
-  struct image_list * list = image_list_tail;
+  struct image_list *list = image_list_tail;
   while (list) {
     if (verbose)
       image_params_print(&list->params);
@@ -52,23 +52,23 @@ void render_images_threaded(int line, int verbose) {
 }
 
 void render_images_window() {
-  struct image_list * list = image_list_tail;
+  struct image_list *list = image_list_tail;
   while (list) {
     if (list->display_window) {
       cvResize(list->image, list->window_image, CV_INTER_CUBIC);
       struct projection_params proj_params;
       sph_to_image_precalculate_projection(&list->params, list->image->width, list->image->height, &proj_params);
       if (list == fit_active)
-        render_fit_distances(list->window_image, list->image, fit_points);
+        render_fit_distances(list->window_image, list->image, fit_points, &list->params, &proj_params);
       cvShowImage(list->filename, list->window_image);
     }
     list = list->prev;
   }
 }
 
-void render_fit_distances(IplImage *window_image, const IplImage *image, struct fit_point_list *points) {
+void render_fit_distances(IplImage *window_image, const IplImage *image, struct fit_point_list *points, const struct image_params *im_params, struct projection_params *proj_params) {
   while (points) {
-    cvCircle(window_image, image_to_image_window(points->globe_position_min, image, window_image), par_star_size, CV_RGB(255,0,0), 3, CV_AA, 0);
+    cvCircle(window_image, image_to_image_window(sph_to_image(sph_to_sph64(points->globe_position_min), im_params, proj_params), image, window_image), par_star_size, CV_RGB(255,0,0), 3, CV_AA, 0);
     cvCircle(window_image, image_to_image_window(points->in_image, image, window_image), par_star_size, CV_RGB(255,255,0), 3, CV_AA, 0);
 
     points = points->next;

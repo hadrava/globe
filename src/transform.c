@@ -16,6 +16,14 @@ CvPoint2D64f sph_image_to_sph(CvPoint image){
   return spherical;
 }
 
+CvPoint sph64_to_sph(CvPoint2D64f spherical) {
+  return cvPoint(spherical.x, spherical.y);
+}
+
+CvPoint2D64f sph_to_sph64(CvPoint spherical) {
+  return cvPoint2D64f(spherical.x, spherical.y);
+}
+
 void sph_to_image_precalculate_projection(const struct image_params *params, int width, int height, struct projection_params *proj_params) {
   proj_params->c_lon1 = cos(-params->longmin/10800*PI);
   proj_params->s_lon1 = sin(-params->longmin/10800*PI);
