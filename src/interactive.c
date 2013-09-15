@@ -1,4 +1,4 @@
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui/highgui_c.h>
 #include "log.h"
 #include "render.h"
 #include "image.h"
