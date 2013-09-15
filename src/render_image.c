@@ -74,7 +74,7 @@ void render_image_init(int threads) {
   while (--threads) {
     pthread_attr_t *thAttr = NULL;
     render_thread_numbers[render_image_threads] = render_image_threads;
-    pthread_create(render_tids+render_image_threads, thAttr, render_thread_main, render_thread_numbers+render_image_threads);//TODO void hack
+    pthread_create(render_tids+render_image_threads, thAttr, render_thread_main, render_thread_numbers+render_image_threads);
     render_image_threads++;
   }
 
