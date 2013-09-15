@@ -6,6 +6,7 @@
 struct fit_point_list {
   CvPoint globe_position_min;
   CvPoint in_image;
+  struct fit_point_list *next;
 };
 
 extern struct image_list *fit_active;
