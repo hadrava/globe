@@ -11,17 +11,23 @@
 int selected_star = -1;
 
 void interactive_spherical_mouse(int event, int x, int y, int flags, void* param) {
+  struct image_list *image = param;
+
   switch (event) {
     case CV_EVENT_LBUTTONDOWN:
-      if (selected_star == -1)
-        selected_star = find_nearest_star(sph_image_to_sph(cvPoint(x, y)));
-      else
-        selected_star = -1;
+      if (image)
+        break;//TODO convert coordinates
+      selected_star = find_nearest_star(sph_image_to_sph(cvPoint(x, y)));
       render_catalogue();
       break;;
     case CV_EVENT_RBUTTONDOWN:
       if (selected_star != -1) {
-        fit_add_point_star(cvPoint(cat_stars[selected_star].longmin, cat_stars[selected_star].latmin), sph_to_image_slow(sph_image_to_sph(cvPoint(x, y)), &fit_active->params, fit_active->image->width, fit_active->image->height), selected_star);
+        CvPoint in_image;
+        if (image)
+	  in_image = image_to_image(cvPoint(x, y), image->window_image, image->image);
+	else
+	  in_image = sph_to_image_slow(sph_image_to_sph(cvPoint(x, y)), &fit_active->params, fit_active->image->width, fit_active->image->height);
+        fit_add_point_star(cvPoint(cat_stars[selected_star].longmin, cat_stars[selected_star].latmin), in_image, selected_star);
 	render_images_window();
       }
       break;;
@@ -47,6 +53,7 @@ void interactive_loop() {
   }
 
   cvSetMouseCallback("Spherical image", &interactive_spherical_mouse, NULL);
+  cvSetMouseCallback(fit_active->filename, &interactive_spherical_mouse, fit_active);
 
   int key = -1;
   lprintf("Press Esc to exit.\n");

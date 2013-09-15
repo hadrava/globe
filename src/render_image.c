@@ -68,8 +68,8 @@ void render_images_window() {
 
 void render_fit_distances(IplImage *window_image, const IplImage *image, struct fit_point_list *points, const struct image_params *im_params, struct projection_params *proj_params) {
   while (points) {
-    cvCircle(window_image, image_to_image_window(sph_to_image(sph_to_sph64(points->globe_position_min), im_params, proj_params), image, window_image), par_star_size, CV_RGB(255,0,0), 3, CV_AA, 0);
-    cvCircle(window_image, image_to_image_window(points->in_image, image, window_image), par_star_size, CV_RGB(255,255,0), 3, CV_AA, 0);
+    cvCircle(window_image, image_to_image(sph_to_image(sph_to_sph64(points->globe_position_min), im_params, proj_params), image, window_image), par_star_size, CV_RGB(255,0,0), 3, CV_AA, 0);
+    cvCircle(window_image, image_to_image(points->in_image, image, window_image), par_star_size, CV_RGB(255,255,0), 3, CV_AA, 0);
 
     points = points->next;
   }

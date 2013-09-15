@@ -84,10 +84,6 @@ CvPoint sph_to_image_slow(CvPoint2D64f spherical, const struct image_params *im_
   return sph_to_image(spherical, im_params, &proj_params);
 }
 
-CvPoint image_to_image_window(const CvPoint image, const IplImage *image_param, const IplImage *image_window_param) {
-  return cvPoint(image.x * image_window_param->width / image_param->width, image.y * image_window_param->height / image_param->height);
-}
-
-CvPoint image_window_to_image(const CvPoint image_window, const IplImage *image_window_param, const IplImage *image_param) {
-  return cvPoint(image_window.x * image_param->width / image_window_param->width, image_window.y * image_param->height / image_window_param->height);
+CvPoint image_to_image(const CvPoint image, const IplImage *src_param, const IplImage *dest_param) {
+  return cvPoint(image.x * dest_param->width / src_param->width, image.y * dest_param->height / src_param->height);
 }
