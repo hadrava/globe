@@ -26,5 +26,6 @@ CvPoint2D64f sph_image_to_sph(CvPoint image);
 
 void sph_to_image_precalculate_projection(const struct image_params *params, int width, int height, struct projection_params *proj_params);
 CvPoint sph_to_image(CvPoint2D64f spherical, const struct image_params *im_params, const struct projection_params *params);
+CvPoint sph_to_image_slow(CvPoint2D64f spherical, const struct image_params *im_params, int width, int height);
 
 #endif

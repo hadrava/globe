@@ -68,3 +68,10 @@ CvPoint sph_to_image(CvPoint2D64f spherical, const struct image_params *im_param
 
   return cvPoint(y + params->img_center_x, -z + params->img_center_y);
 }
+
+CvPoint sph_to_image_slow(CvPoint2D64f spherical, const struct image_params *im_params, int width, int height) {
+  struct projection_params proj_params;
+  sph_to_image_precalculate_projection(im_params, width, height, &proj_params);
+
+  return sph_to_image(spherical, im_params, &proj_params);
+}

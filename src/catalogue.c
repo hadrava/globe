@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <opencv2/imgproc/imgproc_c.h>
 #include "catalogue.h"
 #include "params.h"
 #include "log.h"
@@ -44,5 +45,18 @@ void catalogue_read() {
         lprintf("Loaded %d stars\n", cat_size);
     }
   }
+}
+
+int find_nearest_star(CvPoint2D64f position) {
+  int min = (cat_stars[0].longmin - position.x)*(cat_stars[0].longmin - position.x) + (cat_stars[0].latmin - position.y)*(cat_stars[0].latmin - position.y);;
+  int minstar = 0;
+  for (int i = 1; i<cat_size; i++) {
+    int distance = (cat_stars[i].longmin - position.x)*(cat_stars[i].longmin - position.x) + (cat_stars[i].latmin - position.y)*(cat_stars[i].latmin - position.y);
+    if (distance < min) {
+      min = distance;
+      minstar = i;
+    }
+  }
+  return minstar;
 }
 

@@ -8,6 +8,7 @@
 #include "log.h"
 #include "render.h"
 #include "transform.h"
+#include "interactive.h"
 #include "render_image.h"
 
 CvFont bg_font;
@@ -56,7 +57,7 @@ void render_catalogue() {
   int cons_center_x, cons_center_y, cons_stars;
   for (int i = 0; i < cat_size; i++) {
     CvPoint image_pt = sph_to_sph_image(cvPoint2D64f(cat_stars[i].longmin, cat_stars[i].latmin));
-    cvCircle(sph_image, image_pt, par_star_size*(8-cat_stars[i].mag), CV_RGB(255,0,0), 3, CV_AA, 0);
+    cvCircle(sph_image, image_pt, par_star_size*(8-cat_stars[i].mag), selected_star == i ? CV_RGB(0,255,0) : CV_RGB(255,0,0), 3, CV_AA, 0);
     dlprintf("draw star: x=%d y=%d radius=%d\n", image_pt.x, image_pt.y, par_star_size*(8-cat_stars[i].mag));
     if (cat_stars[i].numinc == 1)
       cons_center_x = cons_center_y = cons_stars = 0;

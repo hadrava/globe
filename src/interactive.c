@@ -1,8 +1,33 @@
+#include <opencv2/highgui/highgui.hpp>
 #include "log.h"
 #include "render.h"
 #include "image.h"
 #include "fit.h"
+#include "transform.h"
+#include "catalogue.h"
 #include "interactive.h"
+
+int selected_star = -1;
+
+void interactive_spherical_mouse(int event, int x, int y, int flags, void* param) {
+  switch (event) {
+    case CV_EVENT_LBUTTONDOWN:
+      if (selected_star == -1)
+        selected_star = find_nearest_star(sph_image_to_sph(cvPoint(x, y)));
+      else
+        selected_star = -1;
+      render_catalogue();
+      break;;
+    case CV_EVENT_RBUTTONDOWN:
+      if (selected_star != -1)
+        fit_add_point(cvPoint(cat_stars[selected_star].longmin, cat_stars[selected_star].latmin), sph_to_image_slow(sph_image_to_sph(cvPoint(x, y)), &fit_active->params, fit_active->image->width, fit_active->image->height));
+      break;;
+    case CV_EVENT_MOUSEMOVE:
+    case CV_EVENT_MBUTTONDBLCLK:
+    default:
+      dlprintf("Unhandled mouse event No. %d\n", event);
+  }
+}
 
 void interactive_loop() {
   if (!fit_active)
@@ -11,6 +36,8 @@ void interactive_loop() {
     wlprintf("No input image (please specify with --img=FILE). Leaving interactive mode!\n");
     return;
   }
+
+  cvSetMouseCallback("Spherical image", &interactive_spherical_mouse, NULL);
 
   int key = -1;
   lprintf("Press Esc to exit.\n");
