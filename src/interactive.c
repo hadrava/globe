@@ -44,80 +44,83 @@ void interactive_loop() {
   while (key != 27) {
     key = display(20);
     switch (key) {
+      case -1:
+      case 27:
+        break;
       case 'a':
         fit_active->params.latmin +=600;
 	render();
-	break;;
+	break;
       case 'z':
         fit_active->params.latmin -=600;
 	render();
-	break;;
+	break;
       case 's':
         fit_active->params.longmin +=600;
 	render();
-	break;;
+	break;
       case 'x':
         fit_active->params.longmin -=600;
 	render();
-	break;;
+	break;
       case 'd':
         fit_active->params.distance +=0.1;
 	render();
-	break;;
+	break;
       case 'c':
         fit_active->params.distance -=0.1;
 	render();
-	break;;
+	break;
       case 'f':
         fit_active->params.directionlatmin +=0.3;
 	render();
-	break;;
+	break;
       case 'v':
         fit_active->params.directionlatmin -=0.3;
 	render();
-	break;;
+	break;
       case 'g':
         fit_active->params.directionlongmin +=0.3;
 	render();
-	break;;
+	break;
       case 'b':
         fit_active->params.directionlongmin -=0.3;
 	render();
-	break;;
+	break;
       case 'h':
         fit_active->params.focallength += 100;
 	render();
-	break;;
+	break;
       case 'n':
         fit_active->params.focallength -= 100;
 	render();
-	break;;
+	break;
       case 'j':
         fit_active->params.zrotationmin += 1000;
 	render();
-	break;;
+	break;
       case 'm':
         fit_active->params.zrotationmin -= 1000;
 	render();
-	break;;
+	break;
       case 'k':
         fit_active->params.xshiftpix += 100;
 	render();
-	break;;
+	break;
       case ',':
         fit_active->params.xshiftpix -= 100;
 	render();
-	break;;
+	break;
       case 'l':
         fit_active->params.yshiftpix += 100;
 	render();
-	break;;
+	break;
       case '.':
         fit_active->params.yshiftpix -= 100;
 	render();
-	break;;
+	break;
       default:
-        ;;
+        dlprintf("Unhandled keypress %i\n", key);
     }
   }
 }
