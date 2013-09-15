@@ -5,8 +5,8 @@ CFLAGS=-c -Wall -std=gnu99 -ggdb
 
 all: globe
 
-globe: main.o params.o help.o log.o catalogue.o render.o transform.o drawings.o image.o interactive.o render_image.o
-	$(CC) $(LDFLAGS) `pkg-config --libs opencv` -lm -lpthread main.o params.o help.o log.o catalogue.o render.o transform.o drawings.o image.o interactive.o render_image.o -o globe
+globe: main.o params.o help.o log.o catalogue.o render.o transform.o drawings.o image.o interactive.o render_image.o fit.o
+	$(CC) $(LDFLAGS) `pkg-config --libs opencv` -lm -lpthread main.o params.o help.o log.o catalogue.o render.o transform.o drawings.o image.o interactive.o render_image.o fit.o -o globe
 
 main.o: main.c
 	$(CC) $(CFLAGS) main.c
@@ -40,6 +40,9 @@ interactive.o: interactive.c
 
 render_image.o: render_image.c
 	$(CC) $(CFLAGS) -pthread render_image.c
+
+fit.o: fit.c
+	$(CC) $(CFLAGS) fit.c
 
 clean:
 	rm -rf *o globe

@@ -76,7 +76,7 @@ void lprintf(const char *format, ...) {
 }
 
 void wlprintf(const char *format, ...) {
-  if (par_verbose) {
+  if (par_verbose+1) {
     va_list args;
     if (log_opened) {
       fprintf(log_handle, "Warning: ");

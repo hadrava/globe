@@ -8,7 +8,6 @@
 
 struct image_list * image_list_head = NULL;
 struct image_list * image_list_tail = NULL;
-struct image_params * image_active_params = NULL; //hack
 
 static FILE *param_file;
 
@@ -73,7 +72,6 @@ void image_load(char *name) {
   else
     image_list_tail = img;
   image_list_head = img;
-  image_active_params = &img->params; // TODO: small hack
 
   atexit(&image_close_all);
 }

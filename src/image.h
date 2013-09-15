@@ -28,7 +28,6 @@ struct image_list {
 
 extern struct image_list *image_list_head;
 extern struct image_list *image_list_tail;
-extern struct image_params *image_active_params; //hack
 
 struct image_params *image_params_cpy(struct image_params *dest, const struct image_params *src);
 void image_load(char *name);
