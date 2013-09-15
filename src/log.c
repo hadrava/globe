@@ -16,7 +16,7 @@ void log_init() {
       time_t time_now = time(NULL);
       struct tm * now = localtime(&time_now);
       log_opened = 1;
-      lprintf("Opening logfile \"%s\" on %s", par_log_file, asctime(now));
+      lprintf("\nOpening logfile \"%s\" on %s", par_log_file, asctime(now));
       atexit(&log_close);
     }
   }

@@ -57,11 +57,11 @@ void interactive_loop() {
 
   int key = -1;
   lprintf("Press Esc to exit.\n");
-  while (key != 27) {
+  while (key != 27) { //<Escape>
     key = display(20);
     switch (key) {
-      case -1:
-      case 27:
+      case -1: //none
+      case 27: //<Escape>
         break;
       case 'a':
         fit_active->params.latmin +=600;
@@ -138,6 +138,10 @@ void interactive_loop() {
       case 65471: //<F2>
         image_save_params(fit_active);
 	break;
+      case 10: //<Return>
+        fit_do(fit_active, fit_points);
+	render();
+        break;
       default:
         dlprintf("Unhandled keypress %i\n", key);
     }
