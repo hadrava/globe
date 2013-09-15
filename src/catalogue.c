@@ -27,14 +27,21 @@ void catalogue_read() {
         struct star * a = cat_stars+i;
 	int longdeg;
 	int latdeg;
-        fscanf(catalogue_handle, "%d %s %d %d %d %d %d %f %d", &a->num, a->cons, &a->numinc, &longdeg, &a->longmin, &latdeg, &a->latmin, &a->mag, &a->bscn);
+        int ret = fscanf(catalogue_handle, "%d %s %d %d %d %d %d %f %d", &a->num, a->cons, &a->numinc, &longdeg, &a->longmin, &latdeg, &a->latmin, &a->mag, &a->bscn);
+	if (ret!=9)
+	  break;
 	a->longmin += longdeg * 60;
 	a->latmin += latdeg * 60;
 	dlprintf("%d %s %d %d %d %f %d\n", a->num, a->cons, a->numinc, a->longmin, a->latmin, a->mag, a->bscn);
 	i++;
       }
       fclose(catalogue_handle);
-      lprintf("Loaded %d stars\n", cat_size);
+      if (cat_size != i) {
+        wlprintf("Catalogue file \"%s\" is corrupted: Loaded %d stars, should contain %d stars.\n", par_catalogue_file, i, cat_size);
+        cat_size = i;
+      }
+      else
+        lprintf("Loaded %d stars\n", cat_size);
     }
   }
 }

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <locale.h>
 #include <opencv2/highgui/highgui.hpp>
 #include "image.h"
 #include "log.h"
@@ -56,8 +57,12 @@ void image_load(char *name) {
   img->filename = name;
   img->display_window = par_image_win;
   if (img->display_window) {
-    cvNamedWindow(img->filename, CV_WINDOW_AUTOSIZE | CV_WINDOW_KEEPRATIO | CV_GUI_EXPANDED);
+    lprintf("creating window named %s for image param %s\n", img->filename, img->params.paramfilename);
     img->window_image = cvCreateImage(cvSize(par_image_width, par_image_height), 8, 3);
+    cvZero(img->window_image);
+    cvNamedWindow(img->filename, CV_WINDOW_AUTOSIZE | CV_WINDOW_KEEPRATIO | CV_GUI_EXPANDED);
+    setlocale(LC_ALL, "C");//cvNamedWindow changed locale, so we set it back
+    cvShowImage(img->filename, img->window_image);
   }
 
   img->next = image_list_head;

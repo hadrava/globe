@@ -5,8 +5,8 @@
 
 IplImage * sph_image;
 
-void render_init();
 void render_close();
+void render_init();
 void render();
 int display(int delay);
 void render_catalogue();

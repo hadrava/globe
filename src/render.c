@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <locale.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
 #include "catalogue.h"
@@ -29,6 +30,7 @@ void render_init() {
 
   if (par_sph_win) {
     cvNamedWindow("Spherical image", CV_WINDOW_AUTOSIZE | CV_WINDOW_KEEPRATIO | CV_GUI_EXPANDED);
+    setlocale(LC_ALL, "C");//cvNamedWindow changed locale, so we set it back
   }
 
   atexit(&render_close);

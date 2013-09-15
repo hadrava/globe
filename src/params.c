@@ -115,7 +115,7 @@ void print_available_params(){
   lprintf("    --interactive[=1]         run in interactive mode\n");
   lprintf("    --threads=NUMBER          specify number of working threads (default: %d)\n", DEF_PAR_THREADS);
   lprintf("    --image-window[=1]        show input image in window (must be before --img)\n");
-  lprintf("    --image-width=PIX         set width of input image window (defult: %d)\n", DEF_PAR_IMAGE_WIDTH);
-  lprintf("    --image-height=PIX        set height of input image window (default: %d)\n", DEF_PAR_IMAGE_HEIGHT);
+  lprintf("    --image-width=PIX         set width of input image window (must be before --img, defult: %d)\n", DEF_PAR_IMAGE_WIDTH);
+  lprintf("    --image-height=PIX        set height of input image window (must be before --img, default: %d)\n", DEF_PAR_IMAGE_HEIGHT);
 }
 
