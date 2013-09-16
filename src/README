@@ -1,26 +1,136 @@
-draw catalogue
-./globe --verbose=2 --spherical-file=out.png --log=logujeme.log --spherical-width=4320 --spherical-height=2160 --catalogue=../katalogy/almagest_clean.dat --star-size=0.5
+Kompilace
+---------
 
-draw drawings and catalogue
-./globe --verbose=1 --spherical-file=out.png --log=logujeme.log --spherical-width=4320 --spherical-height=2160 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.5 --drawings-size=0.5
+Program Globe používá dvě externí knihovny:
 
-window drawing:
-./globe --verbose=1 --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=1600 --spherical-height=800 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.1 --drawings-size=0.5
+ -- OpenCV (jádro + podknihovna highgui)
+   Knihovna na zpracování obrazu. Globe využívá hlavně funkce opencv-highgui
+   pro načítání obrázků ze souboru, ukládání a jejich zobrazení v okně.
+   http://opencv.org/
 
-draw coordinates:
-./globe --verbose=1 --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=1600 --spherical-height=800 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.1 --drawings-size=0.5 --coordinates-draw --coordinates-step=20
+   Protože knihovna prochází celkem aktivním vývojem, není zcela jednoduché
+   určit, které verze budou fungovat bez sebemenší úpravy zdrojových souborů
+   Globe. Hlavičkové soubory se velmi často přesouvají a přejmenovávají.
 
-load image:
-./globe --verbose=1 --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=1600 --spherical-height=800 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.1 --drawings-size=0.5 --coordinates-draw --coordinates-step=20 --img=_FRR6500.jpg
+   Minimálně by program měl fungovat s verzí OpenCV 2.3. Na Debianu testing
+   jsou to hlavně tyto balíčky:
+   libopencv-highgui-dev libopencv-highgui2.3 libopencv-imgproc-dev
+   libopencv-imgproc2.3 libopencv-core-dev libopencv-core2.3
 
-load multiple images:
-./globe --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=1600 --spherical-height=800 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.1 --drawings-size=0.5 --coordinates-draw --coordinates-step=20 --img=_FRR6505.jpg --img=_FRR6500.jpg
+   Nemohu však zcela vyloučit, že je potřeba ještě něco dalšího.
 
-interactive mode:
-./globe --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=1600 --spherical-height=800 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.1 --drawings-size=0.5 --coordinates-draw --coordinates-step=20 --img=_FRR6505.jpg --img=_FRR6500.jpg --interactive
+ -- NLopt
+   http://ab-initio.mit.edu/nlopt/
+   Knihovna pro nelineární optimalizace. V současnosti se z této knihovny
+   využívá pouze simplexová metoda optimalizace.
 
-multithreaded mode (enabled by default):
-./globe --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=1600 --spherical-height=800 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.1 --drawings-size=0.5 --coordinates-draw --coordinates-step=20 --img=_FRR6505.jpg --img=_FRR6500.jpg --interactive --threads=4
+   Debian: apt-get install libnlopt0 libnlopt-dev
 
-input image window:
-./globe --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=1600 --spherical-height=800 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.1 --drawings-size=0.5 --coordinates-draw --coordinates-step=20 --img=_FRR6505.jpg --image-window --image-width=450 --image-height=300 --img=_FRR6500.jpg --interactive --threads=4
+Program lze zkompilovat pomocí make all.
+
+
+Základní práce s Globe
+----------------------
+
+V celém programu všechna desetinná čísla použivají tečku nikoli čárku.
+
+
+KATALOG
+
+Prvním krokem je načtení katalogu hvězd pomocí parametru --catalogue=SOUBOR.
+Katalog by měl být textový soubor. Na prvníĺ řadku se nachází počet hvězd
+v celém katalogu. Každý další řádek určuje jednu hvězdu:
+
+pořadí_hvězdy   název_souhvězdí  pořadí_hvězdy_v_souhvězdí  délka_stupně  délka_minuty  +-šířka_stupně  +-šířka_minuty  magnituda  číslo_hvězdy
+
+Je nutné aby jednotlivá souhvězdí byla vždy pohromadě.
+Název souhvězdí je standardní zkratka.
+První hvězda v souhvězdí musí mít vždy pořadové číslo 1.
+Znaménko u šířky je nutné jak před stupni, tak před minutami, jinak se katalog
+nenačte správně.
+Magnituda je desetinné číslo.
+číslo hvězdy program nepoužívá, slouží k jednoznačné identifikaci hvězdy
+s jinými katalogy.
+
+Pro kontrolu, že se katalog načetl správně lze využít buď parametr --verbose=2
+nebo --spherical-window --spherical-width=1600 --spherical-height=800.
+Je vhodné zachovat poměr stran 2:1, není to však nezbytně nutné.
+
+Velikost hvězd lze donastavit pomocí --star-size=0.1
+Koeficient 0.1 je celkem vhodný pro šířku obrázku 1600 pixelů.
+
+Například souhvězdí Malého medvěda:
+8
+   1 UMi   1  60 10 +66+00 3.       424
+   2 UMi   2  62 30 +70+00 4.      6789
+   3 UMi   3  70 10 +74+20 4.      6322
+   4 UMi   4  89 40 +75+40 4.      5903
+   5 UMi   5  93 40 +77+40 4.      6116
+   6 UMi   6 107 30 +72+50 2.      5563
+   7 UMi   7 116 10 +74+50 2.      5735
+   8 UMi   8 103 00 +71+10 4.      5430
+
+
+KRESBY
+
+Pokud máme k dispozici také kresby souhvězdí, je vhodné je použít pro snadnější
+orientaci. Načítají se pomocí --drawings=SOUBOR.
+
+První řádek obsahuje počet lomených čar v celém souboru.
+Následující řádek udává N počet bodů v dané čáře.
+Dalších N řádek určuje jednotlivé body:
+délka_stupně  šířka_stupně
+
+Pro kontrolu opět můžeme využít --verbose=2 nebo --spherical-window.
+
+Opět lze nastavit šířku čar pomocí --drawings-size=0.5 (1600x800 pix.)
+
+
+SOUŘADNICE
+
+Volitelně lze vykreslovat také souřadnice pomocí parametru --coordinates-draw.
+Krok pak můžeme nastavit ve stupních --coordinates-step=20.
+
+
+ZPRACOVÁNÍ FOTOGRAFIÍ
+
+Soubor načteme pomocí --img=SOUBOR. Podporované formáty záleží na OpenCV. Je
+nutné, aby obrázky měly příponu podle svého typu, jinak je OpenCV nedokáže
+načíst.
+
+Volitelně si načtený obrázek můžeme zobrazit pomocí
+--image-window --image-width=450 --image-height=300
+
+Pozor, toto je nutné specifikovat před parametrem --img.
+
+Abychom mohli s těmito fotografiemi něco dělat, je nutné mít načtený katalog,
+zapnuté okno --spherical-window a zvolený režim --interactive.
+
+U fotografie je potřeba nalézt parametry projekce. Dohromady se jedná o devět
+čísel. Jejich přibližné nastavení je možné pomocí dvojic kláves A-Z až L-'.'.
+Pokud je globus na fotografii přibližně uprostřed, tak stačí jej posunout na
+správné místo pomocí AZSX, otočit pomocí JM a zvolit přibližnou vzdálenost DC.
+
+Aktuální parametry zobrazení lze uložit do souboru .par pomocí klávesy F2.
+
+
+FITOVÁNÍ
+
+Pokud již máme přibližně nalezenou projekci je velmi jednoduché hledat
+odpovídající si dvojice hvězd v katalogu a na fotografii. Nejprve vybereme
+hvězdu z katalogu levým tlačítkem, označí se zeleně. Následně můžeme její
+pozici ukázat na fotografii (v libovolném okně) pomocí pravého tlačítka.
+
+Pokud určíme několik hvězd, můžeme spustit fitování Enterem.
+
+V současnosti se používá simplexová metoda
+
+DALŠÍ NASTAVENÍ
+
+Pár dalších vlastností lze nastavit pomocí parametrů. Nepopsaných výše.
+Seznam všech možných parametrů lze získat zavoláním ./globe --help.
+
+
+
+
+
