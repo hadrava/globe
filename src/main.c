@@ -1,5 +1,4 @@
 #include "params.h"
-#include "help.h"
 #include "log.h"
 #include "catalogue.h"
 #include "render.h"
@@ -16,7 +15,7 @@ int main(int argc, char *argv[]) {
     print_params();
 
   if (par_help) {
-    print_help();
+    print_available_params();
     return 0;
   }
 
