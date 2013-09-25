@@ -1,0 +1,132 @@
+globe  --  hledání parametrů projekce fotografií hvězdného glóbu
+
+Program Globe využívá kromě libc také matematickou knihovnu, posixová vlákna
+pthread, knihovnu pro práci s obrazem OpenCV (Camera Vision) a knihovnu pro
+nelineární optimalizaci NLopt.
+
+soubory:
+
+        parse_params.[ch]
+                void parse_params(int argc, char *argv[]);
+                        Zpracuje celou příkazovou řádku programu. Vše uloží do proměnných prefixovaných par_
+			(viz parse_params.h).
+                        pozor: Pokud narazí na parametr --img, rovnou zavolá i funkci image_load() pro načtení
+			daného obrázku.
+                void print_params();
+                        Vypíše stav všech parametrů. (Vhodné pro debugování.)
+                void print_available_params();
+                        Vypíše stručnou nápovědu - seznam všech povolených argumentů.
+
+
+        print.[ch]
+                void log_init();
+                        Začátek logování do souboru (par_log_file)
+                void dlprintf(const char *format, ...);
+                        Debugovací výstup, tiskne pouze při par_verbose >= 2.
+                void vlprintf(const char *format, ...);
+                        Verbose výstup, tiskne pouze při par_verbose != 0.
+                void lprintf(const char *format, ...);
+                        Základní výstup, měl by být používaný místo klasického printf.
+                void wlprintf(const char *format, ...);
+                        Warning, lze vypnout pomocí par_verbose = -1, tiskne na chybový výstup
+                void elprintf(const char *format, ...);
+                        Error, nelze vypnout, tiskne na chybový výstup
+
+
+        catalogue.[ch]
+                void catalogue_read();
+                        Načítání katalogu ze souboru (název souboru specifikován pomocí par_catalogue_file).
+                int find_nearest_star(CvPoint2D64f position);
+                        Hledání nejbližší hvězdy k zadaným sférickým souřadnicím (v minutách).
+                int cat_size;
+                        Počet hvězd v katalogu.
+                struct star * cat_stars;
+                        Pole s načteným katalogem.
+
+
+        drawings.[ch]
+                void drawings_read();
+                        Načte kresby souhvězdí ze souboru (dle par_drawings_file).
+
+
+        image.[ch]
+                void image_load(char *name);
+                        Načte fotografii ze souboru a přidá ji do spojového seznamu. Zároveň načte také parametry
+			projekce ze souboru .par (pokud existuje).
+                void image_params_print(const struct image_params *params);
+                        Pro informaci vypíše parametry fotografie.
+                void image_save_params(struct image_list *img);
+                        Uloží aktuální projekční parametry do souboru.
+
+
+        render.[ch]
+                void render_init();
+                        Inicializace všech obrázků, okna.
+                void render();
+                        Vyrenderování všeho, co se má renderovat.
+                int display(int delay);
+                        Znovu vykreslí obrázky do oken, čeká delay milisekund na stisk klávesy (návratová hodnota).
+
+
+        render_image.[ch]
+                void render_image_init(int threads);
+                        Inicializuje vykreslování vstupních fotografií pomocí několika vláken.
+                void render_images();
+                        Překreslí všechny fotografie. Tato funkce je volána automaticky z render.c/render().
+                void render_images_window();
+                        Překreslí pouze všechna okna s původními fotografiemi.
+
+
+        tansform.[ch]
+                        Obashuje všechny důležité geometrické transformace. V programu se počítá s následujícímy
+			typy souřadnic:
+                            - sph       - sférické v minutách
+                            - sph64     - sférické v minutách (s 64-bit přesností)
+                            - sph_image - obrázek v ekvidistantní válcové projekci
+                            - image     - souřadnice fotografie glóbu (projekce ideální dírkovou komorou na plochu
+			                  fotografie)
+                CvPoint sph_to_sph_image(CvPoint2D64f spherical);
+                CvPoint2D64f sph_image_to_sph(CvPoint image);
+                        Převod ze sférických souřadnic do válcové projekce a zpět. (Nutné například pro vykreslování
+			hvězd z katalogu.)
+                CvPoint sph64_to_sph(CvPoint2D64f spherical);
+                CvPoint2D64f sph_to_sph64(CvPoint spherical);
+                        Změna přesnosti použitých souřadnic.
+                CvPoint image_to_image(const CvPoint image, const IplImage *src_param, const IplImage *dest_param);
+                        Změna rozlišení dle aktuálních rozměrů fotografií.
+                CvPoint sph_to_image_slow(CvPoint2D64f spherical, const struct image_params *im_params, int width, int height);
+                        Projekce sférických souřadnic do plochy CCD čipu fotoaparátu. im_params jsou parametry
+			projekce. width a height šířka fotografie. Tato funkce je pomalá, pokud je potřeba počítat
+			více pixelů se stejnou projekcí, je vhodné použít následující funkci dvojicí:
+                void sph_to_image_precalculate_projection(const struct image_params *params, int width, int height, struct projection_params *proj_params);
+                        Předpočítá hodnoty funkcí, které jsou konstantní pro danou projekci. Výrazně tak urychlí
+			vykreslování fotografií.
+                CvPoint sph_to_image(CvPoint2D64f spherical, const struct image_params *im_params, const struct projection_params *params);
+                        Projekce sférických souřadnic do plochy CCD čipu fotoaparátu s použitím předvypočítaných
+			parametrů.
+
+
+        fit.[ch]
+                void fit_add_point(CvPoint globe_position_min, CvPoint in_image);
+                        Přidá fitovací bod. globe_position_min jsou sférické souřadnice bodu v minutách,
+			in_image je ten samý bod na fotografii (v pixelech).
+                void fit_add_point_star(CvPoint globe_position_min, CvPoint in_image, int star);
+                        Přidá fitovací bod stejně jako předchozí funkce, navíc uloží informaci o tom, která hvězda
+			je na těchto souřadnicích.
+                struct fit_point_list *fit_remove_point(struct fit_point_list *point, struct fit_point_list *list);
+                        Odstraní vybraný fitovací bod z listu.
+                struct fit_point_list *fit_find_star(int star);
+                        Najde fitovací bod podle čísla hvězdy.
+                void fit_do(struct image_list *image, struct fit_point_list *points);
+                        Spustí fitování daného obrázku pomocí zadaných bodů.
+                double fit_error(struct image_list *image, struct fit_point_list *points, struct image_params *im_params);
+                        Počítá kvadratickou odchylku všech bodů.
+
+
+        interactive.[ch]
+                void interactive_loop();
+                        Stará se o interpretaci vstupu od uživatele v interaktivním režimu.
+                void interactive_spherical_mouse(int event, int x, int y, int flags, void* param);
+                        Reaguje na akce myši. Nejedná se o zcela asynchronní volání, tato funkce je volána pouze
+			z funkce cvWaitKey() potažmo render.c/display();
+
