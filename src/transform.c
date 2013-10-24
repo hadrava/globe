@@ -154,8 +154,8 @@ CvPoint2D64f stereographical_to_sph(CvPoint stereographical, const struct stereo
     lon = atan(-z1/x1) + PI/2;
   else if(z1<0 && x1<0)
     lon = atan(x1/z1) + PI;
-  else // if(z1>=0 && x1>0)
-    lon = atan(-x1/z1) + 3*PI/2;
+  else //if(z1>=0 && x1<0)
+    lon = atan(-z1/x1) + 3*PI/2;
 
   return cvPoint2D64f(lon / PI * 10800, lat / PI * 10800); //TODO
 }
