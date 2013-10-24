@@ -4,3 +4,9 @@ catalogue
   detect corrupted file not complete
 stereographical
   create documentation
+  speed-up transformation
+  use input images directly
+fit
+  save and load fiting points
+render image
+  render only window sized image
