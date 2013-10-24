@@ -3,6 +3,7 @@
 
 #include <opencv2/imgproc/imgproc_c.h>
 #include "image.h"
+#include "stereographical.h"
 
 #define PI 3.14159265358979323846  /* pi */
 
@@ -32,5 +33,7 @@ CvPoint sph_to_image(CvPoint2D64f spherical, const struct image_params *im_param
 CvPoint sph_to_image_slow(CvPoint2D64f spherical, const struct image_params *im_params, int width, int height);
 
 CvPoint image_to_image(const CvPoint image, const IplImage *src_param, const IplImage *dest_param);
+
+CvPoint2D64f stereographical_to_sph(CvPoint stereographical, const struct stereographical_params *params, int width, int height);
 
 #endif

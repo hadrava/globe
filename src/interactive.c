@@ -7,6 +7,7 @@
 #include "transform.h"
 #include "catalogue.h"
 #include "interactive.h"
+#include "stereographical.h"
 
 int selected_star = -1;
 
@@ -142,6 +143,38 @@ void interactive_loop() {
         fit_do(fit_active, fit_points);
 	render();
         break;
+      case 'q':
+        stereographical_list_head->params.latmin -= 0.1;
+	render();
+	break;
+      case 'w':
+        stereographical_list_head->params.latmin += 0.1;
+	render();
+	break;
+      case 'e':
+        stereographical_list_head->params.longmin -= 0.1;
+	render();
+	break;
+      case 'r':
+        stereographical_list_head->params.longmin += 0.1;
+	render();
+	break;
+      case 't':
+        stereographical_list_head->params.zrotationmin -= 0.1;
+	render();
+	break;
+      case 'y':
+        stereographical_list_head->params.zrotationmin += 0.1;
+	render();
+	break;
+      case 'u':
+        stereographical_list_head->params.image_size_factor /= 1.2;
+	render();
+	break;
+      case 'i':
+        stereographical_list_head->params.image_size_factor *= 1.2;
+	render();
+	break;
       default:
         dlprintf("Unhandled keypress %i\n", key);
     }

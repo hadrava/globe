@@ -24,3 +24,12 @@ multithreaded mode (enabled by default):
 
 input image window:
 ./globe --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=1600 --spherical-height=800 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.1 --drawings-size=0.5 --coordinates-draw --coordinates-step=20 --img=_FRR6505.jpg --image-window --image-width=450 --image-height=300 --img=_FRR6500.jpg --interactive --threads=4
+
+
+undocu:
+--------
+stereographical interactive:
+./globe --spherical-file=out.png --spherical-window --log=logujeme.log --spherical-width=1600 --spherical-height=800 --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.1 --drawings-size=0.5 --coordinates-draw --coordinates-step=20 --img=_FRR6505.jpg --image-window --image-width=450 --image-height=300 --img=_FRR6500.jpg --interactive --threads=4 --stereo-width=800 --stereo-height=600 --stereo-latmin=-0.4 --stereo-longmin=2.28 --stereo-zrotationmin=-0.3 --stereo-size-factor=895.795200 --stereo=stereographical.jpg --verbose
+
+stereographical render:
+./globe --spherical-file=out.png --log=logujeme.log --drawings=../kresby/glob4_clean_clean.out --catalogue=../katalogy/almagest_clean.dat --star-size=0.1 --drawings-size=0.5 --coordinates-draw --coordinates-step=20 --img=_FRR6505.jpg --image-width=450 --image-height=300 --img=_FRR6500.jpg --threads=4 --stereo-width=12000 --stereo-height=6000 --stereo-latmin=-0.4 --stereo-longmin=2.28 --stereo-zrotationmin=-0.3 --stereo-size-factor=8957.95200 --stereo=stereographical.jpg --verbose

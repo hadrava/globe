@@ -3,6 +3,7 @@
 #include "params.h"
 #include "log.h"
 #include "image.h"
+#include "stereographical.h"
 
 #define PARSE_PAR(PARNAME, PARTYPE, PARVARIABLE) if ((sizeof(PARNAME)==value-argv[i]) && (strncmp(argv[i],PARNAME,sizeof(PARNAME)-1) == 0)) { sscanf(value,PARTYPE,&PARVARIABLE); continue; }
 #define PARSE_STRING_PAR(PARNAME, PARVARIABLE) if ((sizeof(PARNAME)==value-argv[i]) && (strncmp(argv[i],PARNAME,sizeof(PARNAME)-1) == 0)) { PARVARIABLE=value; continue; }
@@ -35,6 +36,12 @@ int par_threads = DEF_PAR_THREADS;
 int par_image_win = 0;
 int par_image_width = DEF_PAR_IMAGE_WIDTH;
 int par_image_height = DEF_PAR_IMAGE_HEIGHT;
+int par_stereo_width = DEF_PAR_IMAGE_WIDTH;
+int par_stereo_height = DEF_PAR_IMAGE_HEIGHT;
+double par_stereo_latmin = 0.0L;
+double par_stereo_longmin = 0.0L;
+double par_stereo_zrotationmin = 0.0L;
+double par_stereo_size_factor = 1.0L;
 
 
 void parse_params(int argc, char *argv[]) {
@@ -60,6 +67,13 @@ void parse_params(int argc, char *argv[]) {
       PARSE_PAR("--image-window", "%d", par_image_win);
       PARSE_PAR("--image-width", "%d", par_image_width);
       PARSE_PAR("--image-height", "%d", par_image_height);
+      PARSE_PAR("--stereo-width", "%d", par_stereo_width);
+      PARSE_PAR("--stereo-height", "%d", par_stereo_height);
+      PARSE_PAR("--stereo-latmin", "%lf", par_stereo_latmin);
+      PARSE_PAR("--stereo-longmin", "%lf", par_stereo_longmin);
+      PARSE_PAR("--stereo-zrotationmin", "%lf", par_stereo_zrotationmin);
+      PARSE_PAR("--stereo-size-factor", "%lf", par_stereo_size_factor);
+      PARSE_STRING_PAR("--stereo", stereographical_prepare(value); value);//WARN: macro hack
     }
     else {
       DETECT_OPT("--verbose", par_verbose++);
@@ -93,29 +107,43 @@ void print_params() {
   lprintf("--image-window=%d\n", par_image_win);
   lprintf("--image-width=%d\n", par_image_width);
   lprintf("--image-height=%d\n", par_image_height);
+  lprintf("--stereo-width=%d\n", par_stereo_width);
+  lprintf("--stereo-height=%d\n", par_stereo_height);
+  lprintf("--stereo-latmin=%lf\n", par_stereo_latmin);
+  lprintf("--stereo-longmin=%lf\n", par_stereo_longmin);
+  lprintf("--stereo-zrotationmin=%lf\n", par_stereo_zrotationmin);
+  lprintf("--stereo-size-factor=%lf\n", par_stereo_size_factor);
+  lprintf("--stereo=NOT_IMPLEMENTED\n");//TODO
 }
 
 void print_available_params(){
   lprintf("Usage: globe [OPTION]\n");
   lprintf("Available parameters:\n");
-  lprintf("    --verbose[=LEVEL]         set or increase verbosity level\n");
-  lprintf("    --help                    display this help message and exit\n");
-  lprintf("    --log=FILE                log everything to file\n");
-  lprintf("    --catalogue=FILE          read star catalogue\n");
-  lprintf("    --spherical-width=PIX     set width of spherical image (defult: %d)\n", DEF_PAR_SPH_WIDTH);
-  lprintf("    --spherical-height=PIX    set height of spherical image (default: %d)\n", DEF_PAR_SPH_HEIGHT);
-  lprintf("    --spherical-file=FILE     save spherical image to file\n");
-  lprintf("    --spherical-window[=1]    show sperical image in window\n");
-  lprintf("    --star-size=COEFF         set star size (default: %f)\n", DEF_PAR_STAR_SIZE);
-  lprintf("    --drawings=FILE           read drawings from file\n");
-  lprintf("    --drawings-size=COEFF     set drawings size (default: %f)\n", DEF_PAR_DRAWINGS_SIZE);
-  lprintf("    --coordinates-draw[=1]    draw spherical coordinates\n");
-  lprintf("    --coordinates-step=DEG    set coordinate spacing in degrees (default: %d)\n", DEF_PAR_COOR_STEP);
-  lprintf("    --img=FILE                load image of globe (can be used multiple times)\n");
-  lprintf("    --interactive[=1]         run in interactive mode\n");
-  lprintf("    --threads=NUMBER          specify number of working threads (default: %d)\n", DEF_PAR_THREADS);
-  lprintf("    --image-window[=1]        show input image in window (must be before --img)\n");
-  lprintf("    --image-width=PIX         set width of input image window (must be before --img, defult: %d)\n", DEF_PAR_IMAGE_WIDTH);
-  lprintf("    --image-height=PIX        set height of input image window (must be before --img, default: %d)\n", DEF_PAR_IMAGE_HEIGHT);
+  lprintf("    --verbose[=LEVEL]           set or increase verbosity level\n");
+  lprintf("    --help                      display this help message and exit\n");
+  lprintf("    --log=FILE                  log everything to file\n");
+  lprintf("    --catalogue=FILE            read star catalogue\n");
+  lprintf("    --spherical-width=PIX       set width of spherical image (defult: %d)\n", DEF_PAR_SPH_WIDTH);
+  lprintf("    --spherical-height=PIX      set height of spherical image (default: %d)\n", DEF_PAR_SPH_HEIGHT);
+  lprintf("    --spherical-file=FILE       save spherical image to file\n");
+  lprintf("    --spherical-window[=1]      show sperical image in window\n");
+  lprintf("    --star-size=COEFF           set star size (default: %f)\n", DEF_PAR_STAR_SIZE);
+  lprintf("    --drawings=FILE             read drawings from file\n");
+  lprintf("    --drawings-size=COEFF       set drawings size (default: %f)\n", DEF_PAR_DRAWINGS_SIZE);
+  lprintf("    --coordinates-draw[=1]      draw spherical coordinates\n");
+  lprintf("    --coordinates-step=DEG      set coordinate spacing in degrees (default: %d)\n", DEF_PAR_COOR_STEP);
+  lprintf("    --img=FILE                  load image of globe (can be used multiple times)\n");
+  lprintf("    --interactive[=1]           run in interactive mode\n");
+  lprintf("    --threads=NUMBER            specify number of working threads (default: %d)\n", DEF_PAR_THREADS);
+  lprintf("    --image-window[=1]          show input image in window (must be before --img)\n");
+  lprintf("    --image-width=PIX           set width of input image window (must be before --img, defult: %d)\n", DEF_PAR_IMAGE_WIDTH);
+  lprintf("    --image-height=PIX          set height of input image window (must be before --img, default: %d)\n", DEF_PAR_IMAGE_HEIGHT);
+  lprintf("    --stereo-width=PIX          set width of output stereographical image (defult: %d)\n", DEF_PAR_IMAGE_WIDTH);
+  lprintf("    --stereo-height=PIX         set height of output stereographical image (defult: %d)\n", DEF_PAR_IMAGE_HEIGHT);
+  lprintf("    --stereo-latmin=DEG         set latitude of output projection\n");
+  lprintf("    --stereo-longmin=DEG        set longitude of output projection\n");
+  lprintf("    --stereo-zrotationmin=DEG   set image rotation of output projection\n");
+  lprintf("    --stereo-size-factor=COEFF  set stereographical image size factor\n");
+  lprintf("    --stereo=FILE               save stereographical image to file\n");
 }
 

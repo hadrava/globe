@@ -19,6 +19,12 @@ extern int par_threads;
 extern int par_image_win;
 extern int par_image_width;
 extern int par_image_height;
+extern int par_stereo_width;
+extern int par_stereo_height;
+extern double par_stereo_latmin;
+extern double par_stereo_longmin;
+extern double par_stereo_zrotationmin;
+extern double par_stereo_size_factor;
 
 void parse_params(int argc, char *argv[]);
 void print_params();

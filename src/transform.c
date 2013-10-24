@@ -3,6 +3,8 @@
 #include "params.h"
 #include "transform.h"
 #include "image.h"
+#include <stdio.h>
+//TODO remove stdio
 
 CvPoint sph_to_sph_image(CvPoint2D64f spherical){
   CvPoint image = cvPoint(par_sph_width * spherical.x / 21600,
@@ -87,3 +89,74 @@ CvPoint sph_to_image_slow(CvPoint2D64f spherical, const struct image_params *im_
 CvPoint image_to_image(const CvPoint image, const IplImage *src_param, const IplImage *dest_param) {
   return cvPoint(image.x * dest_param->width / src_param->width, image.y * dest_param->height / src_param->height);
 }
+
+CvPoint2D64f stereographical_to_sph(CvPoint stereographical, const struct stereographical_params *params, int width, int height) {
+  double x1,y1,z1,x2,y2,z2,x3,y3,z3;
+  //printf("i%lf %lf\n", params->latmin, params->longmin);
+
+  //adapt image size
+  x1 =   (stereographical.x - width/2 ) / params->image_size_factor;
+  y1 = - (stereographical.y - height/2) / params->image_size_factor;
+
+  //image rotation
+  x2 = x1*cos(params->zrotationmin) - y1*sin(params->zrotationmin);
+  y2 = x1*sin(params->zrotationmin) + y1*cos(params->zrotationmin);
+  z2 = 1;
+
+  //move to desired latitude
+  x1 = x2;
+  z1 = z2*cos(params->latmin) - y2*sin(params->latmin);
+  y1 = z2*sin(params->latmin) + y2*cos(params->latmin);
+
+  //move to desired longitude
+  z2 = z1*cos(params->longmin) - x1*sin(params->longmin);
+  x2 = z1*sin(params->longmin) + x1*cos(params->longmin);
+  y2 = y1;
+
+
+  //calculate projection point
+  x1 = 0;
+  y1 = 0;
+  z1 = -1;
+
+  //move to desired latitude //TODO duplicate code
+  x3 = x1;
+  z3 = z1*cos(params->latmin) - y1*sin(params->latmin);
+  y3 = z1*sin(params->latmin) + y1*cos(params->latmin);
+
+  //move to desired longitude //TODO duplicate code
+  z1 = z3*cos(params->longmin) - x3*sin(params->longmin);
+  x1 = z3*sin(params->longmin) + x3*cos(params->longmin);
+  y1 = y3;
+
+
+  //calculate vector projectionpoint -> imagepoint
+  x2 -= x1;
+  y2 -= y1;
+  z2 -= z1;
+
+  //project vector -(1) to (2)
+  double scal = (-x1*x2) + (-y1*y2) + (-z1*z2);
+  //divide by norm (2)
+  scal /= x2*x2 + y2*y2 + z2*z2;
+
+  //calculate position on sphere
+  x1 = x1 + x2*2*scal;
+  y1 = y1 + y2*2*scal;
+  z1 = z1 + z2*2*scal;
+
+  //calculate angles
+  double lat=asin(y1);
+  double lon;
+  if (z1>=0 && x1>=0)
+    lon = atan(x1/z1);
+  else if(z1<0 && x1>=0)
+    lon = atan(-z1/x1) + PI/2;
+  else if(z1<0 && x1<0)
+    lon = atan(x1/z1) + PI;
+  else // if(z1>=0 && x1>0)
+    lon = atan(-x1/z1) + 3*PI/2;
+
+  return cvPoint2D64f(lon / PI * 10800, lat / PI * 10800); //TODO
+}
+

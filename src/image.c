@@ -98,6 +98,7 @@ void image_close_all() {
     free(img->params.paramfilename);
     free(img);
   }
+  image_list_tail = NULL;
 }
 
 void image_save_params(struct image_list *img) {

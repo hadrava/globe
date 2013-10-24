@@ -10,6 +10,7 @@
 #include "transform.h"
 #include "interactive.h"
 #include "render_image.h"
+#include "stereographical.h"
 
 CvFont bg_font;
 CvFont fg_font;
@@ -39,6 +40,7 @@ void render_init() {
 
 void render() {
   render_images();
+  render_all_stereographical();
   if (par_coor_draw)
     render_coordinates();
   render_drawings();
