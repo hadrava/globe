@@ -5,6 +5,7 @@
 #include "image.h"
 #include "log.h"
 #include "params.h"
+#include "fit.h"
 
 struct image_list * image_list_head = NULL;
 struct image_list * image_list_tail = NULL;
@@ -18,12 +19,17 @@ void image_load(char *name) {
   img->image = cvLoadImage(name, CV_LOAD_IMAGE_COLOR);
   lprintf("Loaded image \"%s\" ", name);
 
-  int len = strlen(name);
+  int len = strlen(name); //TODO WARN image name can be shorter!!
   char *filename = malloc((len+1)*sizeof(char));
+  char *fitfilename = malloc((len+1)*sizeof(char));
   strcpy(filename, name);
-  filename[--len] = 'r';
-  filename[--len] = 'a';
-  filename[--len] = 'p';
+  strcpy(fitfilename, name);
+  filename[len-3] = 'p';
+  filename[len-2] = 'a';
+  filename[len-1] = 'r';
+  fitfilename[len-3] = 'f';
+  fitfilename[len-2] = 'i';
+  fitfilename[len-1] = 't';
   FILE *param_file = fopen(filename, "r");
   if (param_file) {
     fscanf(param_file, "%lf", &img->params.latmin);
@@ -51,6 +57,9 @@ void image_load(char *name) {
     lprintf("with default parameters.\n");
   }
   img->params.paramfilename = filename;
+  img->fitfilename = fitfilename;
+  img->fitpoints = fit_load_points_from_file(img->fitfilename);
+  fit_make_active(img);
 
   img->filename = name;
   img->display_window = par_image_win;

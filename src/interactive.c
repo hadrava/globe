@@ -34,7 +34,7 @@ void interactive_spherical_mouse(int event, int x, int y, int flags, void* param
       break;;
     case CV_EVENT_RBUTTONDBLCLK:
       if (selected_star != -1) {
-	fit_points = fit_remove_point(fit_find_star(selected_star), fit_points);
+	fit_active->fitpoints = fit_remove_point(fit_find_star(selected_star), fit_active->fitpoints);
 	render_images_window();
       }
       break;;
@@ -140,7 +140,7 @@ void interactive_loop() {
         image_save_params(fit_active);
 	break;
       case 10: //<Return>
-        fit_do(fit_active, fit_points);
+        fit_do(fit_active, fit_active->fitpoints);
 	render();
         break;
       case 'q':
@@ -174,6 +174,9 @@ void interactive_loop() {
       case 'i':
         stereographical_list_head->params.image_size_factor *= 1.2;
 	render();
+	break;
+      case 65470: //<F1>
+        fit_save_points_to_file(fit_active->fitfilename, fit_active->fitpoints);
 	break;
       default:
         dlprintf("Unhandled keypress %i\n", key);

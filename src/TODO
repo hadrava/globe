@@ -7,6 +7,6 @@ stereographical
   speed-up transformation
   use input images directly
 fit
-  save and load fiting points
+  confirm, that save and load fiting points is working
 render image
   render only window sized image

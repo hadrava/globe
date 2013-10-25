@@ -3,6 +3,7 @@
 #include <nlopt.h>
 #include <strings.h>
 #include <string.h>
+#include <stdio.h>
 #include "image.h"
 #include "transform.h"
 #include "log.h"
@@ -10,29 +11,27 @@
 
 struct image_list *fit_active = NULL;
 
-struct fit_point_list *fit_points = NULL;
-
 void fit_add_point(CvPoint globe_position_min, CvPoint in_image) {
   struct fit_point_list *new_point = malloc(sizeof(struct fit_point_list)); //TODO: free
   new_point->globe_position_min = globe_position_min;
   new_point->in_image = in_image;
   new_point->star = -1;
-  new_point->next = fit_points;
+  new_point->next = fit_active->fitpoints;
   new_point->prev = NULL;
   if (new_point->next)
     new_point->next->prev = new_point;
-  fit_points = new_point;
+  fit_active->fitpoints = new_point;
 }
 
 void fit_add_point_star(CvPoint globe_position_min, CvPoint in_image, int star) {
   struct fit_point_list *new_point = fit_find_star(star);
   if (!new_point) {
     new_point = malloc(sizeof(struct fit_point_list)); //TODO: free
-    new_point->next = fit_points;
+    new_point->next = fit_active->fitpoints;
     new_point->prev = NULL;
     if (new_point->next)
       new_point->next->prev = new_point;
-    fit_points = new_point;
+    fit_active->fitpoints = new_point;
   }
   new_point->globe_position_min = globe_position_min;
   new_point->in_image = in_image;
@@ -40,7 +39,7 @@ void fit_add_point_star(CvPoint globe_position_min, CvPoint in_image, int star) 
 }
 
 struct fit_point_list *fit_find_star(int star) {
-  struct fit_point_list *point = fit_points;
+  struct fit_point_list *point = fit_active->fitpoints;
   while (point) {
     if (point->star == star)
       return point;
@@ -111,4 +110,43 @@ double fit_error(struct image_list *image, struct fit_point_list *points, struct
     points = points->next;
   }
   return error;
+}
+
+struct fit_point_list *fit_load_points_from_file(char *name) {
+  struct fit_point_list *fit_points = NULL;
+  FILE *point_file = fopen(name, "r");
+  if (point_file) {
+    CvPoint a, b;
+    int c, count=0;
+    while (fscanf(point_file, "%i %i %i %i %i\n", &a.x, &a.y, &b.x, &b.y, &c)==5) {
+      struct fit_point_list *newpoint = malloc(sizeof(struct fit_point_list));
+      newpoint->globe_position_min = a;
+      newpoint->in_image = b;
+      newpoint->star = c;
+      newpoint->next = fit_points;
+      newpoint->prev = 0;
+      if (fit_points)
+        fit_points->prev = newpoint;
+      fit_points = newpoint;
+      count++;
+    }
+    fclose(point_file);
+    lprintf("Loaded %i fit poins from file \"%s\".\n", count, name);
+  }
+  return fit_points;
+}
+
+void fit_make_active(struct image_list *image) {
+  fit_active = image;
+}
+
+void fit_save_points_to_file(char *name, struct fit_point_list * fitpoints) {
+  FILE *point_file = fopen(name, "w");
+  if (point_file) {
+    while (fitpoints) {
+      fprintf(point_file, "%i %i ", fitpoints->globe_position_min.x, fitpoints->globe_position_min.y);
+      fprintf(point_file, "%i %i %i\n", fitpoints->in_image.x, fitpoints->in_image.y, fitpoints->star);
+      fitpoints = fitpoints->next;
+    }
+  }
 }

@@ -59,7 +59,7 @@ void render_images_window() {
       struct projection_params proj_params;
       sph_to_image_precalculate_projection(&list->params, list->image->width, list->image->height, &proj_params);
       if (list == fit_active)
-        render_fit_distances(list->window_image, list->image, fit_points, &list->params, &proj_params);
+        render_fit_distances(list->window_image, list->image, fit_active->fitpoints, &list->params, &proj_params);
       cvShowImage(list->filename, list->window_image);
     }
     list = list->prev;

@@ -13,13 +13,15 @@ struct image_params {
   double zrotationmin;
   double xshiftpix;
   double yshiftpix;
-  char * paramfilename;
+  char  *paramfilename;
 };
 
 struct image_list {
   IplImage *image;
   IplImage *window_image;
   struct image_params params;
+  struct fit_point_list *fitpoints;
+  char *fitfilename;
   char *filename;
   int display_window;
   struct image_list *next;
