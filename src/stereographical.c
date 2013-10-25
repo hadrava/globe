@@ -7,26 +7,35 @@
 #include "log.h"
 #include "render.h"
 #include "params.h"
+#include "image.h"
 
 struct stereographical_list *stereographical_list_head = NULL;
 struct stereographical_list *stereographical_list_tail = NULL;
 
 
 void render_stereographical(struct stereographical_list *stereo) {
-  struct stereo_projection_params stereo_params;
-  stereographical_to_sph_precalculate_projection(&stereo->params, stereo->image->width, stereo->image->height, &stereo_params);
-  for (int j=0; j<stereo->image->height; j++) {
-    for (int i=0; i<stereo->image->width; i++) {
-      CvPoint position = sph_to_sph_image(stereographical_to_sph(cvPoint(i,j), &stereo->params, &stereo_params));
+  struct image_list *list = image_list_tail;
+  while (list) {
+    struct projection_params proj_params;
+    sph_to_image_precalculate_projection(&list->params, list->image->width, list->image->height, &proj_params);
+    struct stereo_projection_params stereo_params;
+    stereographical_to_sph_precalculate_projection(&stereo->params, stereo->image->width, stereo->image->height, &stereo_params);
 
-      int dst = i*3 + j*stereo->image->widthStep;
-      int src = position.x*3 + position.y*sph_image->widthStep;
-      if (position.x >= 0 && position.y >= 0 && position.x < sph_image->width && position.y < sph_image->height) {
-        stereo->image->imageData[dst    ] = sph_image->imageData[src    ];
-        stereo->image->imageData[dst + 1] = sph_image->imageData[src + 1];
-        stereo->image->imageData[dst + 2] = sph_image->imageData[src + 2];
+    for (int j=0; j<stereo->image->height; j++) {
+      for (int i=0; i<stereo->image->width; i++) {
+        CvPoint position = sph_to_image(stereographical_to_sph(cvPoint(i,j), &stereo->params, &stereo_params), &list->params, &proj_params);
+
+        int dst = i*3 + j*stereo->image->widthStep;
+        int src = position.x*3 + position.y*list->image->widthStep;
+
+        if (position.x >= 0 && position.y >= 0 && position.x < list->image->width && position.y < list->image->height) {
+          stereo->image->imageData[dst    ] = list->image->imageData[src    ];
+          stereo->image->imageData[dst + 1] = list->image->imageData[src + 1];
+          stereo->image->imageData[dst + 2] = list->image->imageData[src + 2];
+        }
       }
     }
+    list = list->prev;
   }
 }
 
