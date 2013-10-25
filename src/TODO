@@ -6,7 +6,5 @@ stereographical
   create documentation
   speed-up transformation
   use input images directly
-fit
-  confirm, that save and load fiting points is working
 render image
   render only window sized image

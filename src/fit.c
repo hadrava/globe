@@ -142,11 +142,22 @@ void fit_make_active(struct image_list *image) {
 
 void fit_save_points_to_file(char *name, struct fit_point_list * fitpoints) {
   FILE *point_file = fopen(name, "w");
+  if (fitpoints) {
+    while (fitpoints->next) {
+      fitpoints = fitpoints->next;
+    }
+  }
   if (point_file) {
+    int count=0;
     while (fitpoints) {
       fprintf(point_file, "%i %i ", fitpoints->globe_position_min.x, fitpoints->globe_position_min.y);
       fprintf(point_file, "%i %i %i\n", fitpoints->in_image.x, fitpoints->in_image.y, fitpoints->star);
-      fitpoints = fitpoints->next;
+      fitpoints = fitpoints->prev;
+      count++;
     }
+    lprintf("Svaed %i fit poins to file \"%s\".\n", count, name);
+  }
+  else {
+    elprintf("Unable to open file \"%s\" for writing!\n", name);
   }
 }
