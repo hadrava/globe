@@ -54,4 +54,6 @@ void stereographical_to_sph_precalculate_projection(const struct stereographical
 CvPoint2D64f stereographical_to_sph(CvPoint stereographical, const struct stereographical_params *params, const struct stereo_projection_params *proj_params);
 CvPoint2D64f stereographical_to_sph_slow(CvPoint stereographical, const struct stereographical_params *params, int width, int height);
 
+CvPoint stereographical_to_image(CvPoint stereographical, const struct stereographical_params *s_params, const struct stereo_projection_params *proj_params, const struct image_params *im_params, const struct projection_params *params);
+
 #endif

@@ -230,3 +230,67 @@ CvPoint2D64f stereographical_to_sph_slow(CvPoint stereographical, const struct s
   return cvPoint2D64f(lon / PI * 10800, lat / PI * 10800);
 }
 
+CvPoint stereographical_to_image(CvPoint stereographical, const struct stereographical_params *s_params, const struct stereo_projection_params *proj_params, const struct image_params *im_params, const struct projection_params *params) {
+  double x1,y1,z1,x2,y2,z2;
+
+  //adapt image size
+  x1 =   (stereographical.x - proj_params->img_center_x ) / s_params->image_size_factor;
+  y1 = - (stereographical.y - proj_params->img_center_y) / s_params->image_size_factor;
+
+  //image rotation
+  x2 = x1*proj_params->c_rot1 - y1*proj_params->s_rot1;
+  y2 = x1*proj_params->s_rot1 + y1*proj_params->c_rot1;
+
+  //move to desired latitude
+  z1 = proj_params->c_lat1 - y2*proj_params->s_lat1;
+  y2 = proj_params->s_lat1 + y2*proj_params->c_lat1;
+
+  //move to desired longitude
+  z2 = z1*proj_params->c_lon1 - x2*proj_params->s_lon1;
+  x2 = z1*proj_params->s_lon1 + x2*proj_params->c_lon1;
+
+  z1 = proj_params->minus_z1;
+  x1 = proj_params->minus_x1;
+  y1 = proj_params->minus_y1;
+
+  //calculate vector projectionpoint -> imagepoint
+  x2 += x1;
+  y2 += y1;
+  z2 += z1;
+
+  //project vector -(1) to (2)
+  double scal = (x1*x2) + (y1*y2) + (z1*z2);
+  //divide by norm (2)
+  scal /= x2*x2 + y2*y2 + z2*z2;
+
+  //map position to sphere to imagee function
+  double x = z2*2*scal - z1;
+  double y = x2*2*scal - x1;
+  double z = y2*2*scal - y1;
+
+  double a = x*params->c_lon1 - y*params->s_lon1;
+         y = x*params->s_lon1 + y*params->c_lon1;
+
+         x = a*params->c_lat1 - z*params->s_lat1;
+         z = a*params->s_lat1 + z*params->c_lat1;
+
+  //move to camera coordinates (and mirror)
+  x = -x + im_params->distance;
+
+  if (x*x + y*y + z*z + 1 > im_params->distance*im_params->distance)
+    return cvPoint(-1,-1);
+
+  a = x*params->c_lat2 - z*params->s_lat2;
+  z = x*params->s_lat2 + z*params->c_lat2;
+
+  x = a*params->c_lon2 - y*params->s_lon2;
+  y = a*params->s_lon2 + y*params->c_lon2;
+
+  a = z*params->c_rot1 - y*params->s_rot1;
+  y = z*params->s_rot1 + y*params->c_rot1;
+
+  y *= im_params->focallength/x;
+  z = a * im_params->focallength/x;
+
+  return cvPoint(y + params->img_center_x, -z + params->img_center_y);
+}

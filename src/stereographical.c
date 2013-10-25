@@ -23,7 +23,7 @@ void render_stereographical(struct stereographical_list *stereo) {
 
     for (int j=0; j<stereo->image->height; j++) {
       for (int i=0; i<stereo->image->width; i++) {
-        CvPoint position = sph_to_image(stereographical_to_sph(cvPoint(i,j), &stereo->params, &stereo_params), &list->params, &proj_params);
+        CvPoint position = stereographical_to_image(cvPoint(i,j), &stereo->params, &stereo_params, &list->params, &proj_params);
 
         int dst = i*3 + j*stereo->image->widthStep;
         int src = position.x*3 + position.y*list->image->widthStep;
