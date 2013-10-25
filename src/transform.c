@@ -90,9 +90,79 @@ CvPoint image_to_image(const CvPoint image, const IplImage *src_param, const Ipl
   return cvPoint(image.x * dest_param->width / src_param->width, image.y * dest_param->height / src_param->height);
 }
 
-CvPoint2D64f stereographical_to_sph(CvPoint stereographical, const struct stereographical_params *params, int width, int height) {
+void stereographical_to_sph_precalculate_projection (const struct stereographical_params *params, int width, int height, struct stereo_projection_params *proj_params) {
+  proj_params->width = width;
+  proj_params->height = height;
+  proj_params->img_center_x = width/2;
+  proj_params->img_center_y = height/2;
+
+  proj_params->c_rot1 = cos(params->zrotationmin);
+  proj_params->s_rot1 = sin(params->zrotationmin);
+  proj_params->c_lat1 = cos(params->latmin);
+  proj_params->s_lat1 = sin(params->latmin);
+  proj_params->c_lon1 = cos(params->longmin);
+  proj_params->s_lon1 = sin(params->longmin);
+
+  proj_params->minus_x1 = proj_params->c_lat1 * proj_params->s_lon1;
+  proj_params->minus_y1 = proj_params->s_lat1;
+  proj_params->minus_z1 = proj_params->c_lat1 * proj_params->c_lon1;
+}
+
+CvPoint2D64f stereographical_to_sph(CvPoint stereographical, const struct stereographical_params *params, const struct stereo_projection_params *proj_params) {
+  double x1,y1,z1,x2,y2,z2;
+
+  //adapt image size
+  x1 =   (stereographical.x - proj_params->img_center_x ) / params->image_size_factor;
+  y1 = - (stereographical.y - proj_params->img_center_y) / params->image_size_factor;
+
+  //image rotation
+  x2 = x1*proj_params->c_rot1 - y1*proj_params->s_rot1;
+  y2 = x1*proj_params->s_rot1 + y1*proj_params->c_rot1;
+
+  //move to desired latitude
+  z1 = proj_params->c_lat1 - y2*proj_params->s_lat1;
+  y2 = proj_params->s_lat1 + y2*proj_params->c_lat1;
+
+  //move to desired longitude
+  z2 = z1*proj_params->c_lon1 - x2*proj_params->s_lon1;
+  x2 = z1*proj_params->s_lon1 + x2*proj_params->c_lon1;
+
+  z1 = proj_params->minus_z1;
+  x1 = proj_params->minus_x1;
+  y1 = proj_params->minus_y1;
+
+  //calculate vector projectionpoint -> imagepoint
+  x2 += x1;
+  y2 += y1;
+  z2 += z1;
+
+  //project vector -(1) to (2)
+  double scal = (x1*x2) + (y1*y2) + (z1*z2);
+  //divide by norm (2)
+  scal /= x2*x2 + y2*y2 + z2*z2;
+
+  //calculate position on sphere
+  x1 = x2*2*scal - x1;
+  y1 = y2*2*scal - y1;
+  z1 = z2*2*scal - z1;
+
+  //calculate angles
+  double lat=asin(y1);
+  double lon;
+  if (z1>=0 && x1>=0)
+    lon = atan(x1/z1);
+  else if(z1<0 && x1>=0)
+    lon = atan(-z1/x1) + PI/2;
+  else if(z1<0 && x1<0)
+    lon = atan(x1/z1) + PI;
+  else //if(z1>=0 && x1<0)
+    lon = atan(-z1/x1) + 3*PI/2;
+
+  return cvPoint2D64f(lon / PI * 10800, lat / PI * 10800);
+}
+
+CvPoint2D64f stereographical_to_sph_slow(CvPoint stereographical, const struct stereographical_params *params, int width, int height) {
   double x1,y1,z1,x2,y2,z2,x3,y3,z3;
-  //printf("i%lf %lf\n", params->latmin, params->longmin);
 
   //adapt image size
   x1 =   (stereographical.x - width/2 ) / params->image_size_factor;
@@ -119,12 +189,12 @@ CvPoint2D64f stereographical_to_sph(CvPoint stereographical, const struct stereo
   y1 = 0;
   z1 = -1;
 
-  //move to desired latitude //TODO duplicate code
+  //move to desired latitude //WARN: duplicate code
   x3 = x1;
   z3 = z1*cos(params->latmin) - y1*sin(params->latmin);
   y3 = z1*sin(params->latmin) + y1*cos(params->latmin);
 
-  //move to desired longitude //TODO duplicate code
+  //move to desired longitude //WARN: duplicate code
   z1 = z3*cos(params->longmin) - x3*sin(params->longmin);
   x1 = z3*sin(params->longmin) + x3*cos(params->longmin);
   y1 = y3;
@@ -157,6 +227,6 @@ CvPoint2D64f stereographical_to_sph(CvPoint stereographical, const struct stereo
   else //if(z1>=0 && x1<0)
     lon = atan(-z1/x1) + 3*PI/2;
 
-  return cvPoint2D64f(lon / PI * 10800, lat / PI * 10800); //TODO
+  return cvPoint2D64f(lon / PI * 10800, lat / PI * 10800);
 }
 

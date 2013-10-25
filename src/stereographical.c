@@ -13,19 +13,21 @@ struct stereographical_list *stereographical_list_tail = NULL;
 
 
 void render_stereographical(struct stereographical_list *stereo) {
-    for (int j=0; j<stereo->image->height; j++) {
-      for (int i=0; i<stereo->image->width; i++) {
-        CvPoint position = sph_to_sph_image(stereographical_to_sph(cvPoint(i,j), &stereo->params, stereo->image->width, stereo->image->height));
+  struct stereo_projection_params stereo_params;
+  stereographical_to_sph_precalculate_projection(&stereo->params, stereo->image->width, stereo->image->height, &stereo_params);
+  for (int j=0; j<stereo->image->height; j++) {
+    for (int i=0; i<stereo->image->width; i++) {
+      CvPoint position = sph_to_sph_image(stereographical_to_sph(cvPoint(i,j), &stereo->params, &stereo_params));
 
-        int dst = i*3 + j*stereo->image->widthStep;
-        int src = position.x*3 + position.y*sph_image->widthStep;
-        if (position.x >= 0 && position.y >= 0 && position.x < sph_image->width && position.y < sph_image->height) {
-          stereo->image->imageData[dst    ] = sph_image->imageData[src    ];
-          stereo->image->imageData[dst + 1] = sph_image->imageData[src + 1];
-          stereo->image->imageData[dst + 2] = sph_image->imageData[src + 2];
-        }
+      int dst = i*3 + j*stereo->image->widthStep;
+      int src = position.x*3 + position.y*sph_image->widthStep;
+      if (position.x >= 0 && position.y >= 0 && position.x < sph_image->width && position.y < sph_image->height) {
+        stereo->image->imageData[dst    ] = sph_image->imageData[src    ];
+        stereo->image->imageData[dst + 1] = sph_image->imageData[src + 1];
+        stereo->image->imageData[dst + 2] = sph_image->imageData[src + 2];
       }
     }
+  }
 }
 
 void render_all_stereographical() {

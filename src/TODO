@@ -4,7 +4,6 @@ catalogue
   detect corrupted file not complete
 stereographical
   create documentation
-  speed-up transformation
   use input images directly
 render image
   render only window sized image
