@@ -178,8 +178,14 @@ void interactive_loop() {
       case 65470: //<F1>
         fit_save_points_to_file(fit_active->fitfilename, fit_active->fitpoints);
 	break;
+      case '+'|0x10000:
+ //       zoom_in();
+	break;
+      case '-':
+//        zoom_out();
+	break;
       default:
-        dlprintf("Unhandled keypress %i\n", key);
+        dlprintf("Unhandled keypress %i, (0x%X)\n", key, key);
     }
   }
 }
