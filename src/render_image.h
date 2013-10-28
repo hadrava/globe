@@ -13,4 +13,8 @@ void render_image_init(int threads);
 void render_image_close();
 void render_images();
 
+//TODO move it somewhere else
+#include "stereographical.h"
+void render_fit_distances_stereo(IplImage *stereo_image, struct fit_point_list *points, const struct stereographical_params *params);
+
 #endif

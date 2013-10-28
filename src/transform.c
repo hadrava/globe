@@ -294,3 +294,41 @@ CvPoint stereographical_to_image(CvPoint stereographical, const struct stereogra
 
   return cvPoint(y + params->img_center_x, -z + params->img_center_y);
 }
+
+
+CvPoint sph_to_stereographical_slow(CvPoint2D64f spherical, const struct stereographical_params *params, int width, int height) {
+  double x1,y1,z1,x2,y2,z2;
+
+  double lon = spherical.x / 10800 * PI;
+  double lat = spherical.y / 10800 * PI;
+
+  double c_lat = cos(lat);
+  x1 = c_lat * sin(lon);
+  y1 = sin(lat);
+  z1 = c_lat * cos(lon);
+
+  //move to desired longitude
+  z2 = z1*cos(-params->longmin) - x1*sin(-params->longmin);
+  x2 = z1*sin(-params->longmin) + x1*cos(-params->longmin);
+  y2 = y1;
+
+  //move to desired latitude
+  x1 = x2;
+  z1 = z2*cos(-params->latmin) - y2*sin(-params->latmin);
+  y1 = z2*sin(-params->latmin) + y2*cos(-params->latmin);
+
+  //image rotation
+  x2 = x1*cos(-params->zrotationmin) - y1*sin(-params->zrotationmin);
+  y2 = x1*sin(-params->zrotationmin) + y1*cos(-params->zrotationmin);
+  z2 = z1+1;
+
+  //project to image plane
+  x1 = x2 * 2 / z2;
+  y1 = y2 * 2 / z2;
+  z1 = 2;
+
+  //adapt image size
+  x2 = width/2  + x1 * params->image_size_factor;
+  y2 = height/2 - y1 * params->image_size_factor;
+  return cvPoint(x2, y2);
+}

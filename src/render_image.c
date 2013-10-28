@@ -75,6 +75,13 @@ void render_fit_distances(IplImage *window_image, const IplImage *image, struct 
   }
 }
 
+void render_fit_distances_stereo(IplImage *stereo_image, struct fit_point_list *points, const struct stereographical_params *params) {
+  while (points) {
+    cvCircle(stereo_image, sph_to_stereographical_slow(sph_to_sph64(points->globe_position_min), params, stereo_image->width, stereo_image->height), par_star_size, CV_RGB(255,0,0), 3, CV_AA, 0);
+    points = points->next;
+  }
+}
+
 void render_image_init(int threads) {
   render_image_threads = 0;
   render_tids = malloc((threads-1)*sizeof(pthread_t));
